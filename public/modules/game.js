@@ -124,16 +124,17 @@ Game.prototype.attachEventHandlers = function() {
 }
 
 Game.prototype.applyInput = function(inputs, entity) {
+    var multiplier = 1.5
 	if (inputs[87]) {
-		entity.y -= inputs[87] * entity.speed;
+		entity.y -= inputs[87] * entity.speed * multiplier;
 	}
 	if (inputs[83]) {
-		entity.y += inputs[83] * entity.speed;
+		entity.y += inputs[83] * entity.speed * multiplier;
 	}
 	if (inputs[68]) {
-		entity.x += inputs[68] * entity.speed;
+		entity.x += inputs[68] * entity.speed * multiplier;
 	}
 	if (inputs[65]) {
-		entity.x -= inputs[65] * entity.speed;
+		entity.x -= inputs[65] * entity.speed * multiplier;
     }
 }
