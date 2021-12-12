@@ -55,14 +55,9 @@ Game.prototype.performServerReconciliation = function() {
     for (entity of this.entities) {
         if (entity.id == this.client_id) {
             //console.log(`old:x${entity.x}y${entity.y}`)
-            var i = this.pending_input_states.length;
-            while (i--) {
-                var input = this.pending_input_states[i];
-                //console.log(input.input_no, this.last_processed_input_no, this.pending_input_states.length);
-                if (input.input_no <= this.last_processed_input_no) {
-                    this.pending_input_states.splice(i, 1);
-                }   
-            }
+            this.pending_input_states = this.pending_input_states.filter(input => {
+                return input.input_no > this.last_processed_input_no
+            })
             for (input of this.pending_input_states) {
                 this.applyInput(input, entity);
             }

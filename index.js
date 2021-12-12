@@ -49,7 +49,7 @@ io.on('connection', (socket) => {
 		socket.last_processed_input_no = input_no;
 	})	
 	setInterval(() => {socket.emit('update', {last_processed_input_no: socket.last_processed_input_no,
-										  	  state: entities})}, 1000/10)
+										  	  state: entities})}, 1000/3)
 })
 
 let port = process.env.PORT;
