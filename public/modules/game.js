@@ -124,7 +124,7 @@ Game.prototype.attachEventHandlers = function() {
 }
 
 Game.prototype.applyInput = function(inputs, entity) {
-    var multiplier = 0.8
+    var multiplier = 1
 	if (inputs[87]) {
 		entity.y -= inputs[87] * entity.speed * multiplier;
 	}
