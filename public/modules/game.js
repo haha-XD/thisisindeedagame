@@ -7,8 +7,7 @@ var Game = function(canvas, socket) {
     this.socket = socket;
     this.socket.on('connect', () => {console.log('connected!'); 
                                      this.client_id = this.socket.id.valueOf();});
-    this.socket.on('update', (entities) => {this.entities = entities;
-                                            this.perform_server_reconciliation()}); 
+    this.socket.on('update', (entities) => {this.entities = entities}); 
     //updates
 	this.update_rate = 100;
     this.update_interval = null;
@@ -39,7 +38,8 @@ Game.prototype.setUpdateRate = function(hz) {
 		1000 / hz);		
 }
 
-Game.prototype.update = function() {
+Game.prototype.update = function() {;
+    this.perform_server_reconciliation();
 	this.processInputs();
     this.draw();
 }
