@@ -55,10 +55,10 @@ Game.prototype.update = function() {
                 console.log(input.input_no, this.last_processed_input_no, this.pending_input_states.length);
                 if (input.input_no <= this.last_processed_input_no) {
                     this.pending_input_states.splice(i, 1);
-                } else {
-                    console.log('a')
-                    this.applyInput(input, entity);
                 }   
+            }
+            for(input in this.pending_input_states) {
+                this.applyInput(input, entity);
             }
             //console.log(`new:x${entity.x}y${entity.y}`)
         }
