@@ -59,10 +59,13 @@ Game.prototype.performServerReconciliation = function() {
             this.pending_input_states = this.pending_input_states.filter(input => {
                 return input.input_no > this.last_processed_input_no
             })
-            for (input of this.pending_input_states.inputs) {
-                console.log(input)
+            if(this.pending_input_states.inputs) {
+                for (input of this.pending_input_states.inputs) {
+                    console.log(input)
+                    applyInput(input, entity);            
+                }
+                //console.log(`new:x${entity.x}y${entity.y}`)
             }
-            //console.log(`new:x${entity.x}y${entity.y}`)
         }
     }
 }
