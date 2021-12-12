@@ -60,7 +60,7 @@ Game.prototype.performServerReconciliation = function() {
                 return input.input_no > this.last_processed_input_no
             })
             for (input of this.pending_input_states) {
-                this.applyInput(input, entity);
+                //this.applyInput(input, entity);
             }
             //console.log(`new:x${entity.x}y${entity.y}`)
         }
