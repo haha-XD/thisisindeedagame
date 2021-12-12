@@ -60,6 +60,7 @@ Game.prototype.performServerReconciliation = function() {
                 return input.input_no > this.last_processed_input_no
             })
             for (input of this.pending_input_states) {
+                console.log(entity)
                 if (input[87]) {
                     entity.y -= input[87] * entity.speed;
                 }
@@ -72,6 +73,7 @@ Game.prototype.performServerReconciliation = function() {
                 if (input[65]) {
                     entity.x -= input[65] * entity.speed;
                 }
+                console.log(entity)
             }
             //console.log(`new:x${entity.x}y${entity.y}`)
         }
