@@ -57,7 +57,7 @@ Game.prototype.update = function() {
                     this.pending_input_states.splice(i, 1);
                 }   
             }
-            for(input in this.pending_input_states) {
+            for(input of this.pending_input_states) {
                 this.applyInput(input, entity);
             }
             //console.log(`new:x${entity.x}y${entity.y}`)
