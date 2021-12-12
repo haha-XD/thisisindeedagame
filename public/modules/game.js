@@ -61,8 +61,7 @@ Game.prototype.performServerReconciliation = function() {
             })
             if(this.pending_input_states.inputs) {
                 for (input of this.pending_input_states.inputs) {
-                    console.log(input)
-                    applyInput(input, entity);            
+                    console.log(input)      
                 }
                 //console.log(`new:x${entity.x}y${entity.y}`)
             }
@@ -96,6 +95,11 @@ Game.prototype.processInputs = function() {
 
         this.socket.emit('inputs', packaged_input);    
         
+        for(entity of this.entities) {
+            if (entity.id == this.client_id) {
+                this.applyInput(temp_inputs, entity);
+            }
+        }
         this.pending_input_states.push(packaged_input)
         this.input_no++;
     }
