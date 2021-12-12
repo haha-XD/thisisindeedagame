@@ -96,11 +96,6 @@ Game.prototype.processInputs = function() {
 
         this.socket.emit('inputs', packaged_input);    
         
-        for(entity of this.entities) {
-            if (entity.id == this.client_id) {
-                this.applyInput(temp_inputs, entity);
-            }
-        }
         this.pending_input_states.push(packaged_input)
         this.input_no++;
     }
