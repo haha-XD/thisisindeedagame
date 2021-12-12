@@ -43,6 +43,7 @@ Game.prototype.setUpdateRate = function(hz) {
 Game.prototype.update = function() {
 	this.processInputs();
     this.draw();
+    console.log(this.pending_input_states.length)
 }
 
 Game.prototype.performServerReconciliation = function() {
@@ -95,7 +96,6 @@ Game.prototype.processInputs = function() {
         
         for(entity of this.entities) {
             if (entity.id == this.client_id) {
-                console.log('yo');
                 this.applyInput(temp_inputs, entity);
             }
         }
