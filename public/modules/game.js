@@ -52,6 +52,7 @@ Game.prototype.update = function() {
             var i = this.pending_input_states.length;
             while (i--) {
                 var input = this.pending_input_states[i];
+                console.log(input.input_no, this.last_processed_input_no);
                 if (input.input_no <= this.last_processed_input_no) {
                     this.pending_input_states.splice(i, 1);
                 } else {
