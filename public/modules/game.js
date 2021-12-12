@@ -95,9 +95,9 @@ Game.prototype.processInputs = function() {
 
         this.socket.emit('inputs', packaged_input);    
         
-        for(entity in this.entities) {
+        for(entity of this.entities) {
             if (entity.id == this.client_id) {
-                console.log('yo')
+                console.log('yo');
                 this.applyInput(temp_inputs, entity);
             }
         }
