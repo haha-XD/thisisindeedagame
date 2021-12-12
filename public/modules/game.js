@@ -46,7 +46,22 @@ Game.prototype.update = function() {
     //2.find and delete inputs that the server has already processed via last_proc_num
     //3.apply inputs to player 
     //4.pray it works
-
+    for (entity of this.entities) {
+        if (entity.id == this.client_id) {
+            //console.log(`old:x${entity.x}y${entity.y}`)
+            var i = this.pending_input_states.length;
+            while (i--) {
+                var input = this.pending_input_states[i];
+                if (input.input_no <= this.last_processed_input_no) {
+                    this.pending_input_states.splice(i, 1);
+                } else {
+                    console.log('a')
+                    this.applyInput(input, entity);
+                }   
+            }
+            //console.log(`new:x${entity.x}y${entity.y}`)
+        }
+    }
 
 	this.processInputs();
     this.draw();
