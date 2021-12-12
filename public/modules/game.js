@@ -39,13 +39,18 @@ Game.prototype.setUpdateRate = function(hz) {
 }
 
 Game.prototype.update = function() {
-    //server reconcilliation 
+    this.perform_server_reconciliation();
+	this.processInputs();
+    this.draw();
+}
+
+Game.prototype.perform_server_reconciliation = function() {
     //-1.identify player by an id?
     //0.find player
     //1.go through pending inputs 
     //2.find and delete inputs that the server has already processed via last_proc_num
     //3.apply inputs to player 
-    //4.pray it works
+    //4.client is now making decisions before hte server 
     for (entity of this.entities) {
         if (entity.id == this.client_id) {
             //console.log(`old:x${entity.x}y${entity.y}`)
@@ -63,9 +68,6 @@ Game.prototype.update = function() {
             //console.log(`new:x${entity.x}y${entity.y}`)
         }
     }
-
-	this.processInputs();
-    this.draw();
 }
 
 Game.prototype.draw =function() {
