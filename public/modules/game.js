@@ -89,19 +89,26 @@ Game.prototype.processInputs = function() {
 			temp_inputs[property] = dt_sec;
 		}
 	}
-    var packaged_input = {input_no: this.input_no, inputs: temp_inputs}
-	this.pending_input_states.push(packaged_input)
-	this.socket.emit('inputs', packaged_input);
-    this.input_no++;
+    console.log(Object.keys(temp_inputs).length);
+    if(Object.keys(temp_inputs).length != 0) {
+        var packaged_input = {input_no: this.input_no, inputs: temp_inputs}
+        this.pending_input_states.push(packaged_input)
+        this.socket.emit('inputs', packaged_input);    
+        this.input_no++;
+    }
 }
 
 Game.prototype.attachEventHandlers = function() {
 	(function(self) {			
 		window.addEventListener('keydown', function (e) {
-			self.controller[e.keyCode] = true;
+            if([87, 83, 68, 65].includes(e.keyCode)) {
+			    self.controller[e.keyCode] = true;
+            }
 		})
 		window.addEventListener('keyup', function (e) {
-			self.controller[e.keyCode] = false;
+            if([87, 83, 68, 65].includes(e.keyCode)) {
+			    self.controller[e.keyCode] = false;
+            }
 		})
 	})(this);
 }
