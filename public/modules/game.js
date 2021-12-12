@@ -7,7 +7,11 @@ var Game = function(canvas, socket) {
     this.socket = socket;
     this.socket.on('connect', () => {console.log('connected!'); 
                                      this.client_id = this.socket.id.valueOf();});
-    this.socket.on('update', (entities) => {this.entities = entities}); 
+    this.socket.on('update', (data) => {
+        this.entities = data.state;
+        this.last_processed_input_no = data.last_processed_input_no;
+        this.performServerReconciliation();
+    }); 
     //updates
 	this.update_rate = 100;
     this.update_interval = null;
@@ -19,8 +23,6 @@ var Game = function(canvas, socket) {
 	this.pending_input_states = []; //an array of 'controllers' that are yet to be processed
 
     this.last_processed_input_no = 0; //what the server has last processed
-    this.socket.on('input_processed', (input_no) => {this.last_processed_input_no=input_no}); 
-
 }
 
 Game.prototype.initialize = function(update_rate=0) {
@@ -38,13 +40,12 @@ Game.prototype.setUpdateRate = function(hz) {
 		1000 / hz);		
 }
 
-Game.prototype.update = function() {;
-    this.perform_server_reconciliation();
+Game.prototype.update = function() {
 	this.processInputs();
     this.draw();
 }
 
-Game.prototype.perform_server_reconciliation = function() {
+Game.prototype.performServerReconciliation = function() {
     //-1.identify player by an id?
     //0.find player
     //1.go through pending inputs 
@@ -57,10 +58,13 @@ Game.prototype.perform_server_reconciliation = function() {
             var i = this.pending_input_states.length;
             while (i--) {
                 var input = this.pending_input_states[i];
-                console.log(input.input_no, this.last_processed_input_no, this.pending_input_states.length);
+                //console.log(input.input_no, this.last_processed_input_no, this.pending_input_states.length);
                 if (input.input_no <= this.last_processed_input_no) {
                     this.pending_input_states.splice(i, 1);
                 }   
+            }
+            for (input of this.pending_input_states) {
+                this.applyInput(input, entity);
             }
             //console.log(`new:x${entity.x}y${entity.y}`)
         }

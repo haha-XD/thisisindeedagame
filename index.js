@@ -35,6 +35,7 @@ function applyInput(inputs, entity) {
 
 io.on('connection', (socket) => {
 	socket.entity = new Entity();
+	socket.last_processed_input_no = 0;
 	socket.entity.id = socket.id;
 	entities.push(socket.entity);
 
@@ -45,8 +46,10 @@ io.on('connection', (socket) => {
 		input_no = data['input_no']
 		inputs = data['inputs'];
 		applyInput(inputs, socket.entity);
-		socket.emit('input_processed', input_no);
+		socket.last_processed_input_no = input_no;
 	})	
+	setInterval(() => {socket.emit('update', {last_processed_input_no: socket.last_processed_input_no,
+										  	  state: entities})}, 1000/10)
 })
 
 let port = process.env.PORT;
@@ -56,4 +59,3 @@ if (port == null || port == "") {
 server.listen(port, () => {
 	console.log(`[SERVER] now listening to port ${port}`);
 });
-setInterval(() => {io.emit('update', entities)}, 1000/10)
