@@ -56,4 +56,4 @@ if (port == null || port == "") {
 server.listen(port, () => {
 	console.log(`[SERVER] now listening to port ${port}`);
 });
-setInterval(() => {io.emit('update', entities)}, 1000/100)
+setInterval(() => {io.emit('update', entities)}, 1000/3)
