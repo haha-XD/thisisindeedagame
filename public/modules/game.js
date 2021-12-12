@@ -60,7 +60,9 @@ Game.prototype.performServerReconciliation = function() {
                 return input.input_no > this.last_processed_input_no
             })
             for (input of this.pending_input_states) {
+                x = entity.x.valueOf();
                 this.entity = this.applyInput(input, entity);
+                console.log(x, entity.x)
             }
             //console.log(`new:x${entity.x}y${entity.y}`)
         }
@@ -88,7 +90,6 @@ Game.prototype.processInputs = function() {
 			temp_inputs[property] = dt_sec;
 		}
 	}
-    console.log(Object.keys(temp_inputs).length);
     if(Object.keys(temp_inputs).length != 0) {
         var packaged_input = {input_no: this.input_no, inputs: temp_inputs}
 
