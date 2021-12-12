@@ -10,7 +10,7 @@ app.use(express.static('public'));
 var entities = []
 
 var Entity = function() {
-	this.id = -1
+	this.id = ''
 	this.x = 0;
 	this.y = 0;
 	this.speed = 200;

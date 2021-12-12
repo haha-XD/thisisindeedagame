@@ -7,7 +7,8 @@ var Game = function(canvas, socket) {
     this.socket = socket;
     this.socket.on('connect', () => {console.log('connected!'); 
                                      this.client_id = this.socket.id.valueOf();});
-    this.socket.on('update', (entities) => {this.entities = entities}); 
+    this.socket.on('update', (entities) => {this.entities = entities;
+                                            this.perform_server_reconciliation()}); 
     //updates
 	this.update_rate = 100;
     this.update_interval = null;
@@ -39,7 +40,6 @@ Game.prototype.setUpdateRate = function(hz) {
 }
 
 Game.prototype.update = function() {
-    this.perform_server_reconciliation();
 	this.processInputs();
     this.draw();
 }
@@ -124,17 +124,16 @@ Game.prototype.attachEventHandlers = function() {
 }
 
 Game.prototype.applyInput = function(inputs, entity) {
-    var multiplier = 1
 	if (inputs[87]) {
-		entity.y -= inputs[87] * entity.speed * multiplier;
+		entity.y -= inputs[87] * entity.speed;
 	}
 	if (inputs[83]) {
-		entity.y += inputs[83] * entity.speed * multiplier;
+		entity.y += inputs[83] * entity.speed;
 	}
 	if (inputs[68]) {
-		entity.x += inputs[68] * entity.speed * multiplier;
+		entity.x += inputs[68] * entity.speed;
 	}
 	if (inputs[65]) {
-		entity.x -= inputs[65] * entity.speed * multiplier;
+		entity.x -= inputs[65] * entity.speed;
     }
 }
