@@ -21,7 +21,7 @@ var Entity = function() {
 function applyInput(inputs, timestamp, entity) {
     now_ts = new Date().getTime();
     latency = now_ts - timestamp;
-    adjusted_latency = (Math.abs(latency))/1000000
+    adjusted_latency = (Math.abs(latency) * 2)/1000000
     console.log(inputs[87], adjusted_latency);
 
     if (inputs[87]) {
