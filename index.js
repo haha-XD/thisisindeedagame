@@ -19,20 +19,23 @@ var Entity = function() {
 }
 
 function applyInput(inputs, timestamp, entity) {
-	now_ts = new Date();
+	now_ts = new Date().getTime();
+	console.log(timestamp)
 	latency = now_ts - timestamp;
+	console.log('xd', latency)
+	adjusted_latency = (Math.abs(latency * 2))/1000
 
 	if (inputs[87]) {
-		entity.y -= (inputs[87] + (latency * 2)) * entity.speed;
+		entity.y -= (inputs[87] + adjusted_latency) * entity.speed;
 	}
 	if (inputs[83]) {
-		entity.y += (inputs[83] + (latency * 2)) * entity.speed;
+		entity.y += (inputs[83] + adjusted_latency) * entity.speed;
 	}
 	if (inputs[68]) {
-		entity.x += (inputs[68] + (latency * 2)) * entity.speed;
+		entity.x += (inputs[68] + adjusted_latency) * entity.speed;
 	}
 	if (inputs[65]) {
-		entity.x -= (inputs[65] + (latency * 2)) * entity.speed;
+		entity.x -= (inputs[65] + adjusted_latency) * entity.speed;
 	}
 }
 

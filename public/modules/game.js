@@ -64,7 +64,7 @@ Game.prototype.performServerReconciliation = function() {
             if(this.pending_input_states.inputs) {
                 for (input of this.pending_input_states.inputs) {
                     console.log(input)
-                    //applyInput(input, entity);            
+                    applyInput(input, entity);            
                 }
                 //console.log(`new:x${entity.x}y${entity. y}`)
             }
@@ -82,7 +82,7 @@ Game.prototype.draw =function() {
 }
 
 Game.prototype.processInputs = function() {
-	var now_ts = +new Date();
+	var now_ts = new Date().getTime();
 	var last_ts = this.last_ts || now_ts;
 	var dt_sec = (now_ts - last_ts)/1000;
 	this.last_ts = now_ts; //getting the time from the last update till now 
