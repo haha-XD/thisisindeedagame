@@ -19,23 +19,23 @@ var Entity = function() {
 }
 
 function applyInput(inputs, timestamp, entity) {
-	now_ts = new Date().getTime();
-	latency = now_ts - timestamp;
-	adjusted_latency = (Math.abs(latency * 2))
-	console.log(inputs[87], adjusted_latency);
+    now_ts = new Date().getTime();
+    latency = now_ts - timestamp;
+    adjusted_latency = (Math.abs(latency))
+    console.log(inputs[87], adjusted_latency);
 
-	if (inputs[87]) {
-		entity.y -= inputs[87] *  adjusted_latency * entity.speed;
-	}
-	if (inputs[83]) {
-		entity.y += inputs[83] * adjusted_latency  * entity.speed;
-	}
-	if (inputs[68]) {
-		entity.x += inputs[68] * adjusted_latency * entity.speed;
-	}
-	if (inputs[65]) {
-		entity.x -= inputs[65] * adjusted_latency * entity.speed;
-	}
+    if (inputs[87]) {
+        entity.y -= (inputs[87] + adjusted_latency) * entity.speed;
+    }
+    if (inputs[83]) {
+        entity.y += (inputs[83] + adjusted_latency) * entity.speed;
+    }
+    if (inputs[68]) {
+        entity.x += (inputs[68] + adjusted_latency) * entity.speed;
+    }
+    if (inputs[65]) {
+        entity.x -= (inputs[65] + adjusted_latency) * entity.speed;
+    }
 }
 
 io.on('connection', (socket) => {
