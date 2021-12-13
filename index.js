@@ -22,7 +22,7 @@ function applyInput(inputs, timestamp, entity) {
 	now_ts = new Date().getTime();
 	latency = now_ts - timestamp;
 	adjusted_latency = (Math.abs(latency * 2))/10000
-	console.log(adjusted_latency);
+	console.log(inputs[87], adjusted_latency);
 
 	if (inputs[87]) {
 		entity.y -= (inputs[87] + adjusted_latency) * entity.speed;
