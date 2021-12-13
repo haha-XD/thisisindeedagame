@@ -13,7 +13,7 @@ var Entity = function() {
 	this.id = ''
 	this.x = 0;
 	this.y = 0;
-	this.speed = 200;
+	this.speed = 100;
 	
 	this.size = 32
 }
