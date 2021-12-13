@@ -42,7 +42,7 @@ Game.prototype.update = function() {
     this.draw();
     for(entity of this.entities) {
         if(entity.id == this.client_id) {
-            this.document.getElementById('positionStatus').textContent = `x: ${entity.x}, y: ${entity.y}`;
+            document.getElementById('positionStatus').textContent = `x: ${entity.x}, y: ${entity.y}`;
         }
     }
 }
