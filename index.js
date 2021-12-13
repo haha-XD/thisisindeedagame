@@ -18,7 +18,7 @@ var Entity = function() {
 	this.size = 32
 }
 
-function applyInput(inputs, entity) {
+function applyInput(inputs, timestamp, entity) {
 	if (inputs[87]) {
 		entity.y -= inputs[87] * entity.speed;
 	}
@@ -35,7 +35,6 @@ function applyInput(inputs, entity) {
 
 io.on('connection', (socket) => {
 	socket.entity = new Entity();
-	socket.last_processed_input_no = 0;
 	socket.entity.id = socket.id;
 	entities.push(socket.entity);
 
@@ -43,12 +42,11 @@ io.on('connection', (socket) => {
 	console.log('[SERVER] a user has connected');	
 	
 	socket.on('inputs', (data) => {
-		input_no = data['input_no']
+		timestamp = data['ts'];
 		inputs = data['inputs'];
-		applyInput(inputs, socket.entity);
-		socket.last_processed_input_no = input_no;
+		applyInput(inputs, timestamp, socket.entity);
 	})	
-	setInterval(() => {socket.emit('update', {last_processed_input_no: socket.last_processed_input_no,
+	setInterval(() => {socket.emit('update', {ts: new Date(),
 										  	  state: entities})}, 1000/3)
 })
 

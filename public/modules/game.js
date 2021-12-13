@@ -9,7 +9,7 @@ var Game = function(canvas, socket) {
                                      this.client_id = this.socket.id.valueOf();});
     this.socket.on('update', (data) => {
         this.entities = data.state;
-        this.last_processed_input_no = data.last_processed_input_no;
+        this.last_update_ts = data.ts;
         this.performServerReconciliation();
     }); 
     //updates
@@ -19,10 +19,8 @@ var Game = function(canvas, socket) {
     this.last_ts = 0;
     this.controller = {};
     //server reconciliation
-    this.input_no = 0 //an incrementing counter for every input the client has made
+    this.last_update_ts = 0
 	this.pending_input_states = []; //an array of 'controllers' that are yet to be processed
-
-    this.last_processed_input_no = 0; //what the server has last processed
 }
 
 Game.prototype.initialize = function(update_rate=0) {
@@ -57,14 +55,14 @@ Game.prototype.performServerReconciliation = function() {
         if (entity.id == this.client_id) {
             //console.log(`old:x${entity.x}y${entity.y}`)
             this.pending_input_states = this.pending_input_states.filter(input => {
-                return input.input_no > this.last_processed_input_no
+                return input.ts > this.last_update_ts;
             })
             if(this.pending_input_states.inputs) {
                 for (input of this.pending_input_states.inputs) {
                     console.log(input)
                     applyInput(input, entity);            
                 }
-                //console.log(`new:x${entity.x}y${entity.y}`)
+                //console.log(`new:x${entity.x}y${entity. y}`)
             }
         }
     }
@@ -92,7 +90,7 @@ Game.prototype.processInputs = function() {
 		}
 	}
     if(Object.keys(temp_inputs).length != 0) {
-        var packaged_input = {input_no: this.input_no, inputs: temp_inputs}
+        var packaged_input = {ts: now_ts, inputs: temp_inputs}
 
         this.socket.emit('inputs', packaged_input);    
         
@@ -102,7 +100,6 @@ Game.prototype.processInputs = function() {
             }
         }
         this.pending_input_states.push(packaged_input)
-        this.input_no++;
     }
 }
 
