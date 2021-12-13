@@ -21,7 +21,7 @@ var Entity = function() {
 function applyInput(inputs, timestamp, entity) {
     now_ts = new Date().getTime();
     latency = now_ts - timestamp;
-    adjusted_latency = (Math.abs(latency))/10
+    adjusted_latency = (Math.abs(latency))/1000000
     console.log(inputs[87], adjusted_latency);
 
     if (inputs[87]) {
@@ -52,7 +52,7 @@ io.on('connection', (socket) => {
 		applyInput(inputs, timestamp, socket.entity);
 	})	
 	setInterval(() => {socket.emit('update', {ts: new Date(),
-										  	  state: entities})}, 1000/5)
+										  	  state: entities})}, 1000/10)
 })
 
 let port = process.env.PORT;
