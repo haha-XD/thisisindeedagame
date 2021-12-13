@@ -39,7 +39,9 @@ Game.prototype.setUpdateRate = function(hz) {
 }
 
 Game.prototype.update = function() {
+	this.processInputs(); 
     this.draw();
+
     for(entity of this.entities) {
         if(entity.id == this.client_id) {
             document.getElementById('positionStatus').textContent = `x: ${entity.x}, y: ${entity.y}`;
