@@ -48,7 +48,7 @@ io.on('connection', (socket) => {
 		socket.emit('input acknowledged', data['ts'])
 	})	
 	setInterval(() => {socket.emit('update', {ts: new Date().getTime(),
-										  	  state: entities})}, 1000/100)
+										  	  state: entities})}, 1000/10)
 })
 
 let port = process.env.PORT;
