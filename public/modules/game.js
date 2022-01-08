@@ -18,7 +18,6 @@ var Game = function(canvas, socket) {
     this.last_ts = 0;
     this.controller = {};
     //server reconciliation
-    this.last_update_ts = 0
     this.last_ack_num = 0;
     this.cmd_num = 0
 	this.pending_input_states = []; //an array of 'controllers' that are yet to be processed

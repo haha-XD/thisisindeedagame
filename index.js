@@ -15,7 +15,7 @@ var Entity = function() {
 	this.y = 0;
 	this.speed = 200;
 	
-	this.size = 32
+	this.size = 16
 }
 
 function applyInput(inputs, entity) {
