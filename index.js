@@ -11,11 +11,11 @@ var entities = []
 
 var Entity = function() {
 	this.id = ''
-	this.x = 0;
-	this.y = 0;
+	this.x = 100;
+	this.y = 100;
 	this.speed = 200;
 	
-	this.size = 16
+	this.size = 32
 }
 
 function applyInput(inputs, entity) {
