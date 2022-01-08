@@ -51,12 +51,11 @@ Game.prototype.update = function() {
 }
 
 Game.prototype.processServerMessages = function() {
-    var earliest_message = this.network_queue.shift(); 
-    if (!earliest_message) {
-        return;
-    }
-    this.entities = earliest_message['state'];
-    this.last_update_ts = earliest_message['ts'];
+    while (true) {
+        var earliest_message = this.network_queue.shift()
+        this.entities = earliest_message['state'];
+        this.last_update_ts = earliest_message['ts'];
+    }        
 }
 
 Game.prototype.performServerReconciliation = function() {
@@ -73,7 +72,7 @@ Game.prototype.performServerReconciliation = function() {
             console.log(this.pending_input_states.length);
             if(this.pending_input_states) {
                 for (input of this.pending_input_states) {
-                    this.applyInput(input.inputs, entity);            
+                    this.applyInput(input.inpusts, entity);            
                 }
                 //console.log(`new:x${entity.x}y${entity. y}`)
             }
