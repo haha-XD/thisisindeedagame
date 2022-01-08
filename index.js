@@ -46,7 +46,7 @@ io.on('connection', (socket) => {
 		inputs = data['inputs'];
 		applyInput(inputs, socket.entity);
 	})	
-	setInterval(() => {socket.emit('update', {ts: new Date(),
+	setInterval(() => {socket.emit('update', {ts: new Date().getTime(),
 										  	  state: entities})}, 1000/10)
 })
 
