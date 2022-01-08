@@ -60,6 +60,7 @@ Game.prototype.performServerReconciliation = function() {
     for (entity of this.entities) {
         if (entity.id == this.client_id) {
             //console.log(`old:x${entity.x}y${entity.y}`)
+            console.log(this.pending_input_states)
             this.pending_input_states = this.pending_input_states.filter(input => {
                 return input.ts > this.last_update_ts;
             })
