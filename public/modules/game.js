@@ -57,6 +57,7 @@ Game.prototype.processServerMessages = function() {
     }
     this.entities = earliest_message['state'];
     this.last_update_ts = earliest_message['ts'];
+    console.log(this.last_update_ts)
 }
 
 Game.prototype.performServerReconciliation = function() {
