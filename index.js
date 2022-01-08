@@ -13,7 +13,7 @@ var Entity = function() {
 	this.id = ''
 	this.x = 0;
 	this.y = 0;
-	this.speed = 150;
+	this.speed = 200;
 	
 	this.size = 32
 }
@@ -49,7 +49,7 @@ io.on('connection', (socket) => {
 		socket.last_ack_num = cmd_num;
 	})	
 	setInterval(() => {socket.emit('update', {num: socket.last_ack_num,
-										  	  state: entities})}, 1000/50)
+										  	  state: entities})}, 1000/100)
 })
 
 let port = process.env.PORT;
