@@ -10,12 +10,9 @@ var Game = function(canvas, socket) {
                                      this.client_id = this.socket.id.valueOf();});
     this.socket.on('update', (data) => {
         this.network_queue.push(data);
-    });     
-    this.socket.on('input ack', (num) => {
-        this.last_ack_num = num
     }); 
     //updates
-	this.update_rate = 30;
+	this.update_rate = 40;
     this.update_interval = null;
     //controller
     this.last_ts = 0;
@@ -61,6 +58,7 @@ Game.prototype.processServerMessages = function() {
             break;
         }
         this.entities = earliest_message['state'];
+        this.last_ack_num = earliest_message['num']
     }        
 }
 
