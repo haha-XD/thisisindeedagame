@@ -46,7 +46,7 @@ Game.prototype.update = function() {
 
     for(entity of this.entities) {
         if(entity.id == this.client_id) {
-            document.getElementById('positionStatus').textContent = `x: ${entity.x}, y: ${entity.y}`;
+            document.getElementById('positionStatus').textContent = `x: ${entity.x}, y: ${entity.y} last_ack_num: ${this.last_ack_num}`;
         }
     }
 }
