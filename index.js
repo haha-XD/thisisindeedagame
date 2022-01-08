@@ -36,6 +36,7 @@ function applyInput(inputs, entity) {
 io.on('connection', (socket) => {
 	socket.entity = new Entity();
 	socket.entity.id = socket.id;
+	socket.last_ack_num = 0;
 	entities.push(socket.entity);
 
 	console.log(socket.entity);
@@ -45,9 +46,9 @@ io.on('connection', (socket) => {
 		cmd_num = data['num'];
 		inputs = data['inputs'];
 		applyInput(inputs, socket.entity);
-		socket.emit('input acknowledged', cmd_num);
+		socket.last_ack_num = cmd_num;
 	})	
-	setInterval(() => {socket.emit('update', {ts: new Date().getTime(),
+	setInterval(() => {socket.emit('update', {num: socket.last_ack_num,
 										  	  state: entities})}, 1000/10)
 })
 

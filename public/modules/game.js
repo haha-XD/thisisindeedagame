@@ -11,9 +11,6 @@ var Game = function(canvas, socket) {
     this.socket.on('update', (data) => {
         this.network_queue.push(data);
     }); 
-    this.socket.on('input acknowledged', (ack_num) => {
-        this.last_ack_num = ack_num
-    })
     //updates
 	this.update_rate = 10;
     this.update_interval = null;
@@ -62,6 +59,7 @@ Game.prototype.processServerMessages = function() {
             break;
         }
         this.entities = earliest_message['state'];
+        this.last_ack_num = earliest_message['num']
     }        
 }
 
