@@ -45,6 +45,7 @@ io.on('connection', (socket) => {
 		timestamp = data['ts'];
 		inputs = data['inputs'];
 		applyInput(inputs, socket.entity);
+		socket.emit('input acknowledged', data['ts'])
 	})	
 	setInterval(() => {socket.emit('update', {ts: new Date().getTime(),
 										  	  state: entities})}, 1000/100)

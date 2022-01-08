@@ -10,8 +10,10 @@ var Game = function(canvas, socket) {
                                      this.client_id = this.socket.id.valueOf();});
     this.socket.on('update', (data) => {
         this.network_queue.push(data);
-        this.last_update_ts = data['ts'];
     }); 
+    this.socket.on('input acknowledged', (ts) => {
+        this.last_update_ts = ts;
+    })
     //updates
 	this.update_rate = 100;
     this.update_interval = null;
