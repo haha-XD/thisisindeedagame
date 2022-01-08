@@ -104,7 +104,6 @@ Game.prototype.processInputs = function() {
             }
         }
         this.pending_input_states.push(packaged_input)
-        this.performServerReconciliation()
     }
 }
 
