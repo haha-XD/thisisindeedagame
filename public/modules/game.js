@@ -57,7 +57,6 @@ Game.prototype.processServerMessages = function() {
     }
     this.entities = earliest_message['state'];
     this.last_update_ts = earliest_message['ts'];
-    console.log(this.last_update_ts)
 }
 
 Game.prototype.performServerReconciliation = function() {
@@ -74,7 +73,6 @@ Game.prototype.performServerReconciliation = function() {
             console.log(this.pending_input_states.length);
             if(this.pending_input_states) {
                 for (input of this.pending_input_states) {
-                    console.log(input)
                     this.applyInput(input.inputs, entity);            
                 }
                 //console.log(`new:x${entity.x}y${entity. y}`)
