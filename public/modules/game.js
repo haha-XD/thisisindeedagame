@@ -15,7 +15,7 @@ var Game = function(canvas, socket) {
         this.last_update_ts = ts;
     })
     //updates
-	this.update_rate = 100;
+	this.update_rate = 10;
     this.update_interval = null;
     //controller
     this.last_ts = 0;
