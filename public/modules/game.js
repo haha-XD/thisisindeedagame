@@ -10,6 +10,7 @@ var Game = function(canvas, socket) {
                                      this.client_id = this.socket.id.valueOf();});
     this.socket.on('update', (data) => {
         this.network_queue.push(data);
+        this.last_update_ts = data['ts'];
     }); 
     //updates
 	this.update_rate = 100;
@@ -57,7 +58,6 @@ Game.prototype.processServerMessages = function() {
             break;
         }
         this.entities = earliest_message['state'];
-        this.last_update_ts = earliest_message['ts'];
     }        
 }
 
