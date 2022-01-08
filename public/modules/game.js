@@ -12,7 +12,7 @@ var Game = function(canvas, socket) {
         this.network_queue.push(data);
     }); 
     //updates
-	this.update_rate = 100;
+	this.update_rate = 20;
     this.update_interval = null;
     //controller
     this.last_ts = 0;
