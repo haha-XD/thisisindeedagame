@@ -47,6 +47,7 @@ io.on('connection', (socket) => {
 		inputs = data['inputs'];
 		applyInput(inputs, socket.entity);
 		socket.last_ack_num = cmd_num;
+		socket.emit('input ack', cmd_num)
 	})	
 	setInterval(() => {socket.emit('update', {num: socket.last_ack_num,
 										  	  state: entities})}, 1000/50)
