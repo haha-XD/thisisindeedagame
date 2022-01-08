@@ -42,10 +42,10 @@ io.on('connection', (socket) => {
 	console.log('[SERVER] a user has connected');	
 	
 	socket.on('inputs', (data) => {
-		timestamp = data['ts'];
+		cmd_num = data['num'];
 		inputs = data['inputs'];
 		applyInput(inputs, socket.entity);
-		socket.emit('input acknowledged', data['ts'])
+		socket.emit('input acknowledged', cmd_num);
 	})	
 	setInterval(() => {socket.emit('update', {ts: new Date().getTime(),
 										  	  state: entities})}, 1000/10)

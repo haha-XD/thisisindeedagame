@@ -11,8 +11,8 @@ var Game = function(canvas, socket) {
     this.socket.on('update', (data) => {
         this.network_queue.push(data);
     }); 
-    this.socket.on('input acknowledged', (ts) => {
-        this.last_update_ts = ts;
+    this.socket.on('input acknowledged', (ack_num) => {
+        this.last_ack_num = ack_num
     })
     //updates
 	this.update_rate = 10;
@@ -22,6 +22,8 @@ var Game = function(canvas, socket) {
     this.controller = {};
     //server reconciliation
     this.last_update_ts = 0
+    this.last_ack_num = 0;
+    this.cmd_num = 0
 	this.pending_input_states = []; //an array of 'controllers' that are yet to be processed
 }
 
@@ -73,7 +75,7 @@ Game.prototype.performServerReconciliation = function() {
     for (entity of this.entities) {
         if (entity.id == this.client_id) {
             //console.log(`old:x${entity.x}y${entity.y}`)
-            this.pending_input_states = this.pending_input_states.filter(input => input.ts > this.last_update_ts);
+            this.pending_input_states = this.pending_input_states.filter(input => input.num > this.last_ack_num);
             console.log(this.pending_input_states.length);
             if(this.pending_input_states) {
                 for (input of this.pending_input_states) {
@@ -107,15 +109,17 @@ Game.prototype.processInputs = function() {
 		}
 	}
     if(Object.keys(temp_inputs).length != 0) {
-        var packaged_input = {ts: now_ts, inputs: temp_inputs}
+        var packaged_input = {num: this.cmd_num, inputs: temp_inputs}
 
         this.socket.emit('inputs', packaged_input);    
         
         for(entity of this.entities) {
             if (entity.id == this.client_id) {
+                this.applyInput(temp_inputs, entity)
             }
         }
         this.pending_input_states.push(packaged_input)
+        this.cmd_num += 1;
     }
 }
 
