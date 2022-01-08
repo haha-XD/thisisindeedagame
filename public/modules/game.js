@@ -88,7 +88,7 @@ Game.prototype.draw =function() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     for(entity of this.entities) {
         this.ctx.beginPath();
-        this.ctx.rect(entity.x-(entity.size/2), entity.y-(entity.size/2), 50, 50);
+        this.ctx.rect(entity.x-(entity.size/2), entity.y-(entity.size/2), entity.size, entity.size);
         this.ctx.stroke();
     }
 }
