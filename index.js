@@ -47,7 +47,7 @@ io.on('connection', (socket) => {
 		applyInput(inputs, socket.entity);
 	})	
 	setInterval(() => {socket.emit('update', {ts: new Date().getTime(),
-										  	  state: entities})}, 1000/10)
+										  	  state: entities})}, 1000/100)
 })
 
 let port = process.env.PORT;
