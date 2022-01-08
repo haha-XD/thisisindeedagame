@@ -4,13 +4,12 @@ var Game = function(canvas, socket) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
     //networking    
+    this.network_queue = []
     this.socket = socket;
     this.socket.on('connect', () => {console.log('connected!'); 
                                      this.client_id = this.socket.id.valueOf();});
     this.socket.on('update', (data) => {
-        this.entities = data['state'];
-        this.last_update_ts = data['ts'];
-        this.performServerReconciliation()
+        this.network_queue.push(data);
     }); 
     //updates
 	this.update_rate = 100;
@@ -39,6 +38,8 @@ Game.prototype.setUpdateRate = function(hz) {
 }
 
 Game.prototype.update = function() {
+    this.processServerMessages();
+    this.performServerReconciliation();
 	this.processInputs(); 
     this.draw();
 
@@ -47,7 +48,15 @@ Game.prototype.update = function() {
             document.getElementById('positionStatus').textContent = `x: ${entity.x}, y: ${entity.y}`;
         }
     }
-    console.log(this.pending_input_states.length);
+}
+
+Game.prototype.processServerMessages = function() {
+    var earliest_message = this.network_queue.shift(); 
+    if (!earliest_message) {
+        return;
+    }
+    this.entities = earliest_message['state'];
+    this.last_update_ts = earliest_message['ts'];
 }
 
 Game.prototype.performServerReconciliation = function() {
@@ -101,6 +110,7 @@ Game.prototype.processInputs = function() {
         
         for(entity of this.entities) {
             if (entity.id == this.client_id) {
+                this.applyInput(temp_inputs, entity)
             }
         }
         this.pending_input_states.push(packaged_input)
