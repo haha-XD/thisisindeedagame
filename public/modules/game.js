@@ -8,9 +8,9 @@ var Game = function(canvas, socket) {
     this.socket.on('connect', () => {console.log('connected!'); 
                                      this.client_id = this.socket.id.valueOf();});
     this.socket.on('update', (data) => {
-        this.entities = data.state;
-        this.last_update_ts = data.ts;
-        this.performServerReconciliation();
+        this.entities = data['state'];
+        this.last_update_ts = data['ts'];
+        this.performServerReconciliation()
     }); 
     //updates
 	this.update_rate = 100;
@@ -47,6 +47,7 @@ Game.prototype.update = function() {
             document.getElementById('positionStatus').textContent = `x: ${entity.x}, y: ${entity.y}`;
         }
     }
+    console.log(this.pending_input_states.length);
 }
 
 Game.prototype.performServerReconciliation = function() {
@@ -65,7 +66,7 @@ Game.prototype.performServerReconciliation = function() {
             if(this.pending_input_states.inputs) {
                 for (input of this.pending_input_states.inputs) {
                     console.log(input)
-                    //applyInput(input, entity);            
+                    applyInput(input, entity);            
                 }
                 //console.log(`new:x${entity.x}y${entity. y}`)
             }
