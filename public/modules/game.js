@@ -1,5 +1,5 @@
 var Game = function(canvas, socket) {
-    this.entities = []
+    this.localEntities = []
     //rendering
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
@@ -43,8 +43,8 @@ Game.prototype.update = function() {
 	this.processInputs(); 
     this.draw();
 
-    for(entity of this.entities) {
-        if(entity.id == this.clientId) {
+    for(entity of this.localEntities) {
+        if(entity.socketId == this.clientId) {
             document.getElementById('positionStatus').textContent = `x: ${entity.x}, y: ${entity.y} lastAckNum: ${this.lastAckNum}`;
         }
     }
@@ -56,7 +56,7 @@ Game.prototype.processServerMessages = function() {
         if (!message) {
             break;
         }
-        this.entities = message['state'];
+        this.localEntities = message['state'];
         this.lastAckNum = message['num'];
         this.performServerReconciliation();
     }        
@@ -69,8 +69,8 @@ Game.prototype.performServerReconciliation = function() {
     //2.find and delete inputs that the server has already processed via last_proc_num
     //3.apply inputs to player 
     //4.client is now making decisions before hte server 
-    for (entity of this.entities) {
-        if (entity.id == this.clientId) {
+    for (entity of this.localEntities) {
+        if (entity.socketId == this.clientId) {
             //console.log(`old:x${entity.x}y${entity.y}`)
             this.pendingInputStates = this.pendingInputStates.filter(input => input.num > this.lastAckNum);
             console.log(this.pendingInputStates.length);
@@ -86,7 +86,7 @@ Game.prototype.performServerReconciliation = function() {
 
 Game.prototype.draw =function() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    for(entity of this.entities) {
+    for(entity of this.localEntities) {
         this.ctx.beginPath();
         this.ctx.rect(entity.x-(entity.size/2), entity.y-(entity.size/2), entity.size, entity.size);
         this.ctx.stroke();
@@ -110,8 +110,8 @@ Game.prototype.processInputs = function() {
 
         this.socket.emit('inputs', packagedInput);    
         
-        for(entity of this.entities) {
-            if (entity.id == this.clientId) {
+        for(entity of this.localEntities) {
+            if (entity.socketId == this.clientId) {
                 this.applyInput(tempInputs, entity)
             }
         }

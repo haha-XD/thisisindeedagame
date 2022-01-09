@@ -5,29 +5,11 @@ const server = http.createServer(app);
 const { Server } = require('socket.io');
 const io = new Server(server);
 
+var entityTypes = require('./common/entityTypes');
+
 app.use(express.static('public'));
 
-var entities = []
-
-var Entity = function() {
-	this.id = ''
-	this.x = 100;
-	this.y = 100;
-	this.speed = 200;
-	
-	this.size = 32
-}
-
-var Bullet = function(x, y, spd, dir) {
-	this.id = ''
-	this.x = x;
-	this.y = y;
-	this.speed = spd;
-	this.direction = dir;
-	
-	this.size = 32
-}
-
+var svEntities = []
 
 function applyInput(inputs, entity) {
     if (inputs[87]) {
@@ -45,27 +27,26 @@ function applyInput(inputs, entity) {
 }
 
 io.on('connection', (socket) => {
-	socket.entity = new Entity();
-	socket.entity.id = socket.id;
+	socket.playerEntity = new entityTypes.Player(100, 100, 200, 32, socket.id);
 	socket.lastAckNum = 0;
-	entities.push(socket.entity);
+	svEntities.push(socket.playerEntity);
 
-	console.log(socket.entity);
 	console.log('[SERVER] a user has connected');	
+	console.log(socket.playerEntity);
 	
 	socket.on('inputs', (data) => {
 		cmdNum = data['num'];
 		inputs = data['inputs'];
-		applyInput(inputs, socket.entity);
+		applyInput(inputs, socket.playerEntity);
 		socket.lastAckNum = cmdNum;
 	})	
 
 	socket.on('testBulletRequest', () => {
-		socket.emit('bulletSpawn', Bullet(200, 200, 50, 0))
+		socket.emit('bulletSpawn', new entityTypes.Bullet(200, 200, 50, 16, 0))
 	})
 
 	setInterval(() => {socket.emit('update', {num: socket.lastAckNum,
-										  	  state: entities})}, 1000/50)
+										  	  state: svEntities})}, 1000/50)
 })
 
 let port = process.env.PORT;
