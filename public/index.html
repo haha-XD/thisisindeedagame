@@ -4,6 +4,7 @@
 	<body>
 		<h1>WASD</h1>
 		<div id="positionStatus"></div>
+		<button onclick="sendBulletRequest()">test button</button>
 		<br>
 		<canvas id="gameCanvas" width="1000" height="500" style="border:1px solid #000000;">this browser doesnt work with canvas</canvas></canvas>
 		
@@ -12,6 +13,10 @@
 		<script>
 			game = new Game(document.getElementById('gameCanvas'), io());
 			game.initialize()
+
+			function sendBulletRequest() {
+				game.socket.emit('testBulletRequest');
+			}
 		</script>
 	</body>
 </html>

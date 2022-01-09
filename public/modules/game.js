@@ -4,36 +4,36 @@ var Game = function(canvas, socket) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
     //networking    
-    this.network_queue = []
+    this.networkQueue = []
     this.socket = socket;
     this.socket.on('connect', () => {console.log('connected!'); 
-                                     this.client_id = this.socket.id.valueOf();});
+                                     this.clientId = this.socket.id.valueOf();});
     this.socket.on('update', (data) => {
-        this.network_queue.push(data);
+        this.networkQueue.push(data);
     }); 
     //updates
-	this.update_rate = 100;
-    this.update_interval = null;
+	this.updateRate = 100;
+    this.updateInterval = null;
     //controller
-    this.last_ts = 0;
+    this.lastTs = 0;
     this.controller = {};
     //server reconciliation
-    this.last_ack_num = 0;
-    this.cmd_num = 0
-	this.pending_input_states = []; //an array of 'controllers' that are yet to be processed
+    this.lastAckNum = 0;
+    this.cmdNum = 0
+	this.pendingInputStates = []; //an array of 'controllers' that are yet to be processed
 }
 
-Game.prototype.initialize = function(update_rate=0) {
+Game.prototype.initialize = function(updateRate=0) {
 	this.attachEventHandlers();
-	this.setUpdateRate(update_rate || this.update_rate);	
+	this.setUpdateRate(updateRate || this.updateRate);	
 }
 
 Game.prototype.setUpdateRate = function(hz) {
-	this.update_rate = hz;
-	if(this.update_interval) {
-		clearInterval(this.update_interval);
+	this.updateRate = hz;
+	if(this.updateInterval) {
+		clearInterval(this.updateInterval);
 	}
-	this.update_interval = setInterval(
+	this.updateInterval = setInterval(
 		(function(self) { return function() { self.update(); }; })(this),
 		1000 / hz);		
 }
@@ -44,20 +44,20 @@ Game.prototype.update = function() {
     this.draw();
 
     for(entity of this.entities) {
-        if(entity.id == this.client_id) {
-            document.getElementById('positionStatus').textContent = `x: ${entity.x}, y: ${entity.y} last_ack_num: ${this.last_ack_num}`;
+        if(entity.id == this.clientId) {
+            document.getElementById('positionStatus').textContent = `x: ${entity.x}, y: ${entity.y} lastAckNum: ${this.lastAckNum}`;
         }
     }
 }
 
 Game.prototype.processServerMessages = function() {
     while (true) {
-        var earliest_message = this.network_queue.shift()
-        if (!earliest_message) {
+        var message = this.networkQueue.shift()
+        if (!message) {
             break;
         }
-        this.entities = earliest_message['state'];
-        this.last_ack_num = earliest_message['num'];
+        this.entities = message['state'];
+        this.lastAckNum = message['num'];
         this.performServerReconciliation();
     }        
 }
@@ -70,12 +70,12 @@ Game.prototype.performServerReconciliation = function() {
     //3.apply inputs to player 
     //4.client is now making decisions before hte server 
     for (entity of this.entities) {
-        if (entity.id == this.client_id) {
+        if (entity.id == this.clientId) {
             //console.log(`old:x${entity.x}y${entity.y}`)
-            this.pending_input_states = this.pending_input_states.filter(input => input.num > this.last_ack_num);
-            console.log(this.pending_input_states.length);
-            if(this.pending_input_states) {
-                for (input of this.pending_input_states) {
+            this.pendingInputStates = this.pendingInputStates.filter(input => input.num > this.lastAckNum);
+            console.log(this.pendingInputStates.length);
+            if(this.pendingInputStates) {
+                for (input of this.pendingInputStates) {
                     this.applyInput(input.inputs, entity);            
                 }
                 //console.log(`new:x${entity.x}y${entity. y}`)
@@ -94,29 +94,29 @@ Game.prototype.draw =function() {
 }
 
 Game.prototype.processInputs = function() {
-	var now_ts = new Date().getTime();
-	var last_ts = this.last_ts || now_ts;
-	var dt_sec = (now_ts - last_ts)/1000;
-	this.last_ts = now_ts; //getting the time from the last update till now 
+	var nowTs = new Date().getTime();
+	var lastTs = this.lastTs || nowTs;
+	var dtSec = (nowTs - lastTs)/1000;
+	this.lastTs = nowTs; //getting the time from the last update till now 
 	
-	var temp_inputs = {}; //how long are you pressing each key?
+	var tempInputs = {}; //how long are you pressing each key?
 	for(property in this.controller) {
 		if(this.controller[property]) {
-			temp_inputs[property] = dt_sec;
+			tempInputs[property] = dtSec;
 		}
 	}
-    if(Object.keys(temp_inputs).length != 0) {
-        var packaged_input = {num: this.cmd_num, inputs: temp_inputs}
+    if(Object.keys(tempInputs).length != 0) {
+        var packagedInput = {num: this.cmdNum, inputs: tempInputs}
 
-        this.socket.emit('inputs', packaged_input);    
+        this.socket.emit('inputs', packagedInput);    
         
         for(entity of this.entities) {
-            if (entity.id == this.client_id) {
-                this.applyInput(temp_inputs, entity)
+            if (entity.id == this.clientId) {
+                this.applyInput(tempInputs, entity)
             }
         }
-        this.pending_input_states.push(packaged_input)
-        this.cmd_num += 1;
+        this.pendingInputStates.push(packagedInput)
+        this.cmdNum += 1;
     }
 }
 

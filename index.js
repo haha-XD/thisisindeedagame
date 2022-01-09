@@ -18,6 +18,17 @@ var Entity = function() {
 	this.size = 32
 }
 
+var Bullet = function(x, y, spd, dir) {
+	this.id = ''
+	this.x = x;
+	this.y = y;
+	this.speed = spd;
+	this.direction = dir;
+	
+	this.size = 32
+}
+
+
 function applyInput(inputs, entity) {
     if (inputs[87]) {
         entity.y -= (inputs[87]) * entity.speed;
@@ -36,19 +47,24 @@ function applyInput(inputs, entity) {
 io.on('connection', (socket) => {
 	socket.entity = new Entity();
 	socket.entity.id = socket.id;
-	socket.last_ack_num = 0;
+	socket.lastAckNum = 0;
 	entities.push(socket.entity);
 
 	console.log(socket.entity);
 	console.log('[SERVER] a user has connected');	
 	
 	socket.on('inputs', (data) => {
-		cmd_num = data['num'];
+		cmdNum = data['num'];
 		inputs = data['inputs'];
 		applyInput(inputs, socket.entity);
-		socket.last_ack_num = cmd_num;
+		socket.lastAckNum = cmdNum;
 	})	
-	setInterval(() => {socket.emit('update', {num: socket.last_ack_num,
+
+	socket.on('testBulletRequest', () => {
+		socket.emit('bulletSpawn', Bullet(200, 200, 50, 0))
+	})
+
+	setInterval(() => {socket.emit('update', {num: socket.lastAckNum,
 										  	  state: entities})}, 1000/50)
 })
 
