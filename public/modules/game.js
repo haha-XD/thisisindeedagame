@@ -52,7 +52,7 @@ Game.prototype.update = function() {
 
 Game.prototype.processServerMessages = function() {
     while (true) {
-        var earliest_message = this.network_queue.shift()
+        var earliest_message = this.network_queue.pop()
         if (!earliest_message) {
             break;
         }
