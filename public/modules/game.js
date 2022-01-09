@@ -40,7 +40,6 @@ Game.prototype.setUpdateRate = function(hz) {
 
 Game.prototype.update = function() {
     this.processServerMessages();
-    this.performServerReconciliation();
 	this.processInputs(); 
     this.draw();
 
@@ -59,6 +58,7 @@ Game.prototype.processServerMessages = function() {
         }
         this.entities = earliest_message['state'];
         this.last_ack_num = earliest_message['num']
+        this.performServerReconciliation();
     }        
 }
 
