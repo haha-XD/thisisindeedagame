@@ -52,12 +52,12 @@ Game.prototype.update = function() {
 
 Game.prototype.processServerMessages = function() {
     while (true) {
-        var earliest_message = this.network_queue.pop()
+        var earliest_message = this.network_queue.shift()
         if (!earliest_message) {
             break;
         }
         this.entities = earliest_message['state'];
-        this.last_ack_num = earliest_message['num']
+        this.last_ack_num = earliest_message['num'];
         this.performServerReconciliation();
     }        
 }
