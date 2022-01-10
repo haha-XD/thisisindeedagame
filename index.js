@@ -42,7 +42,7 @@ io.on('connection', (socket) => {
 	})	
 
 	socket.on('testBulletRequest', () => {
-		socket.emit('bulletSpawn', new entityTypes.Bullet(200, 200, 50, 16, 0))
+		svEntities.push(new entityTypes.Bullet(200, 200, 20, 16, 0));
 	})
 
 	setInterval(() => {socket.emit('update', {num: socket.lastAckNum,
