@@ -1,6 +1,6 @@
 import * as movement from './common/movement.js';
 
-var Game = function(canvas, socket) {
+let Game = function(canvas, socket) {
     this.localEntities = []
     //rendering
     this.canvas = canvas;
@@ -61,7 +61,7 @@ Game.prototype.updateEntities = function() {
 
 Game.prototype.processServerMessages = function() {
     while (true) {
-        var message = this.networkQueue.shift()
+        let message = this.networkQueue.shift()
         if (!message) {
             break;
         }
@@ -103,19 +103,19 @@ Game.prototype.draw =function() {
 }
 
 Game.prototype.processInputs = function() {
-	var nowTs = new Date().getTime();
-	var lastTs = this.lastTs || nowTs;
-	var dtSec = (nowTs - lastTs)/1000;
+	let nowTs = new Date().getTime();
+	let lastTs = this.lastTs || nowTs;
+	let dtSec = (nowTs - lastTs)/1000;
 	this.lastTs = nowTs; //getting the time from the last update till now 
 	
-	var tempInputs = {}; //how long are you pressing each key?
+	let tempInputs = {}; //how long are you pressing each key?
 	for(let property in this.controller) {
 		if(this.controller[property]) {
 			tempInputs[property] = dtSec;
 		}
 	}
     if(Object.keys(tempInputs).length != 0) {
-        var packagedInput = {num: this.cmdNum, inputs: tempInputs}
+        let packagedInput = {num: this.cmdNum, inputs: tempInputs}
 
         this.socket.emit('inputs', packagedInput);    
         

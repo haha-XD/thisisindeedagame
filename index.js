@@ -10,7 +10,7 @@ import * as movement from './public/common/movement.js';
 
 app.use(express.static('public'));
 
-var svEntities = []
+let svEntities = []
 
 io.on('connection', (socket) => {
 	socket.playerEntity = new entityTypes.Player(100, 100, 200, 32, socket.id);
@@ -21,8 +21,8 @@ io.on('connection', (socket) => {
 	console.log(socket.playerEntity);
 	
 	socket.on('inputs', (data) => {
-		var cmdNum = data['num'];
-		var inputs = data['inputs'];
+		let cmdNum = data['num'];
+		let inputs = data['inputs'];
 		movement.applyInput(inputs, socket.playerEntity);
 		socket.lastAckNum = cmdNum;
 	})	
