@@ -1,30 +1,16 @@
-const express = require('express');
+import express from 'express'
 const app = express();
-const http = require('http')
+import http from 'http'
 const server = http.createServer(app);
-const { Server } = require('socket.io');
+import { Server } from 'socket.io';
 const io = new Server(server);
 
-var entityTypes = require('./common/entityTypes');
+import * as entityTypes from './public/common/entityTypes.js';
+import * as movement from './public/common/movement.js';
 
 app.use(express.static('public'));
 
 var svEntities = []
-
-function applyInput(inputs, entity) {
-    if (inputs[87]) {
-        entity.y -= (inputs[87]) * entity.speed;
-    }
-    if (inputs[83]) {
-        entity.y += (inputs[83]) * entity.speed;
-    }
-    if (inputs[68]) {
-        entity.x += (inputs[68]) * entity.speed;
-    }
-    if (inputs[65]) {
-        entity.x -= (inputs[65]) * entity.speed;
-    }
-}
 
 io.on('connection', (socket) => {
 	socket.playerEntity = new entityTypes.Player(100, 100, 200, 32, socket.id);
@@ -35,14 +21,14 @@ io.on('connection', (socket) => {
 	console.log(socket.playerEntity);
 	
 	socket.on('inputs', (data) => {
-		cmdNum = data['num'];
-		inputs = data['inputs'];
-		applyInput(inputs, socket.playerEntity);
+		var cmdNum = data['num'];
+		var inputs = data['inputs'];
+		movement.applyInput(inputs, socket.playerEntity);
 		socket.lastAckNum = cmdNum;
 	})	
 
 	socket.on('testBulletRequest', () => {
-		svEntities.push(new entityTypes.Bullet(200, 200, 20, 16, 0));
+		svEntities.push(new entityTypes.Bullet(200, 200, 20, 16, 0))
 	})
 
 	setInterval(() => {socket.emit('update', {num: socket.lastAckNum,

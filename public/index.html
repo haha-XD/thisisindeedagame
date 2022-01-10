@@ -4,19 +4,21 @@
 	<body>
 		<h1>WASD</h1>
 		<div id="positionStatus"></div>
-		<button onclick="sendBulletRequest()">test button</button>
+		<button id="testButton">test button</button>
 		<br>
 		<canvas id="gameCanvas" width="1000" height="500" style="border:1px solid #000000;">this browser doesnt work with canvas</canvas></canvas>
 		
-		<script src="/socket.io/socket.io.js"></script>
-		<script src="/modules/game.js"></script>
-		<script>
-			game = new Game(document.getElementById('gameCanvas'), io());
+		<script type = "module">
+			import { Game } from './game.js';
+			import { io } from "https://cdn.socket.io/4.3.0/socket.io.esm.min.js";
+			
+			var game = new Game(document.getElementById('gameCanvas'), io());
 			game.initialize()
 
 			function sendBulletRequest() {
 				game.socket.emit('testBulletRequest');
 			}
+			document.getElementById('testButton').addEventListener('click', sendBulletRequest);
 		</script>
 	</body>
 </html>

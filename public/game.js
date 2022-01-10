@@ -1,3 +1,5 @@
+import * as movement from './common/movement.js';
+
 var Game = function(canvas, socket) {
     this.localEntities = []
     //rendering
@@ -41,12 +43,19 @@ Game.prototype.setUpdateRate = function(hz) {
 Game.prototype.update = function() {
     this.processServerMessages();
 	this.processInputs(); 
+    this.updateEntities();
     this.draw();
 
-    for(entity of this.localEntities) {
+    for(let entity of this.localEntities) {
         if(entity.socketId == this.clientId) {
             document.getElementById('positionStatus').textContent = `x: ${entity.x}, y: ${entity.y} lastAckNum: ${this.lastAckNum}`;
         }
+    }
+}
+
+Game.prototype.updateEntities = function() {
+    for(let entity of this.localEntities) {
+     
     }
 }
 
@@ -69,14 +78,14 @@ Game.prototype.performServerReconciliation = function() {
     //2.find and delete inputs that the server has already processed via last_proc_num
     //3.apply inputs to player 
     //4.client is now making decisions before hte server 
-    for (entity of this.localEntities) {
+    for (let entity of this.localEntities) {
         if (entity.socketId == this.clientId) {
             //console.log(`old:x${entity.x}y${entity.y}`)
             this.pendingInputStates = this.pendingInputStates.filter(input => input.num > this.lastAckNum);
             console.log(this.pendingInputStates.length);
             if(this.pendingInputStates) {
-                for (input of this.pendingInputStates) {
-                    this.applyInput(input.inputs, entity);            
+                for (let input of this.pendingInputStates) {
+                    movement.applyInput(input.inputs, entity);            
                 }
                 //console.log(`new:x${entity.x}y${entity. y}`)
             }
@@ -86,7 +95,7 @@ Game.prototype.performServerReconciliation = function() {
 
 Game.prototype.draw =function() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    for(entity of this.localEntities) {
+    for(let entity of this.localEntities) {
         this.ctx.beginPath();
         this.ctx.rect(entity.x-(entity.size/2), entity.y-(entity.size/2), entity.size, entity.size);
         this.ctx.stroke();
@@ -100,7 +109,7 @@ Game.prototype.processInputs = function() {
 	this.lastTs = nowTs; //getting the time from the last update till now 
 	
 	var tempInputs = {}; //how long are you pressing each key?
-	for(property in this.controller) {
+	for(let property in this.controller) {
 		if(this.controller[property]) {
 			tempInputs[property] = dtSec;
 		}
@@ -110,9 +119,9 @@ Game.prototype.processInputs = function() {
 
         this.socket.emit('inputs', packagedInput);    
         
-        for(entity of this.localEntities) {
+        for(let entity of this.localEntities) {
             if (entity.socketId == this.clientId) {
-                this.applyInput(tempInputs, entity)
+                movement.applyInput(tempInputs, entity)
             }
         }
         this.pendingInputStates.push(packagedInput)
@@ -149,3 +158,5 @@ Game.prototype.applyInput = function(inputs, entity) {
 		entity.x -= inputs[65] * entity.speed;
     }
 }
+
+export { Game };
