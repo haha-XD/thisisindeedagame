@@ -92,7 +92,7 @@ Game.prototype.performServerReconciliation = function() {
             this.pendingInputStates = this.pendingInputStates.filter(input => input.num > this.lastAckNum);
             if(this.pendingInputStates) {
                 for (let input of this.pendingInputStates) {
-                    entityOps.applyInput(this.screenRot, input.inputs, entity);            
+                    entityOps.applyInput(input.rot, input.inputs, entity);            
                 }
                 //console.log(`new:x${entity.x}y${entity. y}`)
             }
