@@ -6,7 +6,7 @@ import { Server } from 'socket.io';
 const io = new Server(server);
 
 import * as entityTypes from './public/common/entityTypes.js';
-import * as movement from './public/common/movement.js';
+import * as entityOps from './public/common/entityOperations.js';
 
 app.use(express.static('public'));
 
@@ -23,7 +23,8 @@ io.on('connection', (socket) => {
 	socket.on('inputs', (data) => {
 		let cmdNum = data['num'];
 		let inputs = data['inputs'];
-		movement.applyInput(inputs, socket.playerEntity);
+		let screenRot = data['rot'];
+		entityOps.applyInput(screenRot, inputs, socket.playerEntity);
 		socket.lastAckNum = cmdNum;
 	})	
 

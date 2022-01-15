@@ -1,10 +1,13 @@
-import * as movement from './common/movement.js';
+import * as entityOps from './common/entityOperations.js';
+import { rotate } from './common/helper.js';
 
 let Game = function(canvas, socket) {
     this.localEntities = []
     //rendering
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
+    this.screenRot = 45;
+    this.screenRotSpeed = 200
     //networking    
     this.networkQueue = []
     this.socket = socket;
@@ -41,6 +44,9 @@ Game.prototype.setUpdateRate = function(hz) {
 }
 
 Game.prototype.update = function() {
+    if(!this.socket.connected) {
+        return;
+    }
     this.processServerMessages();
 	this.processInputs(); 
     this.updateEntities();
@@ -48,14 +54,16 @@ Game.prototype.update = function() {
 
     for(let entity of this.localEntities) {
         if(entity.socketId == this.clientId) {
-            document.getElementById('positionStatus').textContent = `x: ${entity.x}, y: ${entity.y} lastAckNum: ${this.lastAckNum}`;
+            document.getElementById('positionStatus').textContent = `x: ${entity.x | 0}, y: ${entity.y | 0} lastAckNum: ${this.lastAckNum} screenRot: ${this.screenRot | 0}`;
         }
     }
 }
 
 Game.prototype.updateEntities = function() {
     for(let entity of this.localEntities) {
-     
+        if (entity.entityId == "bullet") {
+            //entityOps.advanceEntity(entity, 90, 45)
+        }
     }
 }
 
@@ -82,10 +90,9 @@ Game.prototype.performServerReconciliation = function() {
         if (entity.socketId == this.clientId) {
             //console.log(`old:x${entity.x}y${entity.y}`)
             this.pendingInputStates = this.pendingInputStates.filter(input => input.num > this.lastAckNum);
-            console.log(this.pendingInputStates.length);
             if(this.pendingInputStates) {
                 for (let input of this.pendingInputStates) {
-                    movement.applyInput(input.inputs, entity);            
+                    entityOps.applyInput(this.screenRot, input.inputs, entity);            
                 }
                 //console.log(`new:x${entity.x}y${entity. y}`)
             }
@@ -93,11 +100,29 @@ Game.prototype.performServerReconciliation = function() {
     }
 }
 
-Game.prototype.draw =function() {
+Game.prototype.draw = function() {
+    let playerX = 0;
+    let playerY = 0;
+    for (let entity of this.localEntities) {
+        if (entity.socketId == this.clientId)  {
+            playerX = entity.x
+            playerY = entity.y
+            break;
+        }
+    }
+    
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     for(let entity of this.localEntities) {
+        let cEntityX = entity.x - playerX;
+        let cEntityY = entity.y - playerY;
+        let [x, y] = rotate(cEntityX, cEntityY, this.screenRot);
+        x += playerX;
+        y += playerY;
+
         this.ctx.beginPath();
-        this.ctx.rect(entity.x-(entity.size/2), entity.y-(entity.size/2), entity.size, entity.size);
+        this.ctx.rect(x - (entity.size / 2) + 300 - playerX, 
+                      y - (entity.size / 2) + 300 - playerY, 
+                      entity.size, entity.size);
         this.ctx.stroke();
     }
 }
@@ -114,14 +139,16 @@ Game.prototype.processInputs = function() {
 			tempInputs[property] = dtSec;
 		}
 	}
+    
     if(Object.keys(tempInputs).length != 0) {
-        let packagedInput = {num: this.cmdNum, inputs: tempInputs}
+        let packagedInput = {rot: this.screenRot, num: this.cmdNum, inputs: tempInputs}
 
         this.socket.emit('inputs', packagedInput);    
         
         for(let entity of this.localEntities) {
             if (entity.socketId == this.clientId) {
-                movement.applyInput(tempInputs, entity)
+                this.clApplyInputs(tempInputs);
+                entityOps.applyInput(this.screenRot, tempInputs, entity)
             }
         }
         this.pendingInputStates.push(packagedInput)
@@ -129,34 +156,29 @@ Game.prototype.processInputs = function() {
     }
 }
 
+Game.prototype.clApplyInputs = function(inputs) {
+    if (inputs[81]) {
+        this.screenRot += inputs[81] * this.screenRotSpeed
+    }
+    if (inputs[69]) {
+        this.screenRot -= inputs[69] * this.screenRotSpeed
+    }
+
+}
+
 Game.prototype.attachEventHandlers = function() {
 	(function(self) {			
 		window.addEventListener('keydown', function (e) {
-            if([87, 83, 68, 65].includes(e.keyCode)) {
+            if([87, 83, 68, 65, 81, 69].includes(e.keyCode)) {
 			    self.controller[e.keyCode] = true;
             }
 		})
 		window.addEventListener('keyup', function (e) {
-            if([87, 83, 68, 65].includes(e.keyCode)) {
+            if([87, 83, 68, 65, 81, 69].includes(e.keyCode)) {
 			    self.controller[e.keyCode] = false;
             }
 		})
 	})(this);
-}
-
-Game.prototype.applyInput = function(inputs, entity) {
-	if (inputs[87]) {
-		entity.y -= inputs[87] * entity.speed;
-	}
-	if (inputs[83]) {
-		entity.y += inputs[83] * entity.speed;
-	}
-	if (inputs[68]) {
-		entity.x += inputs[68] * entity.speed;
-	}
-	if (inputs[65]) {
-		entity.x -= inputs[65] * entity.speed;
-    }
 }
 
 export { Game };
