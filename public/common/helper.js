@@ -2,10 +2,10 @@ export function radians(angle) {
     return (Math.PI/180) * angle; 
 }
 
-export function advance(x, y, angle, amount) {
-    let tempX = x + (Math.cos(radians(angle)) * amount);
-    let tempY = y + (Math.sin(radians(angle)) * amount);
-    return [tempX, tempY];
+export function advance(angle, amount) {
+    let vecX = Math.cos(radians(angle)) * amount;
+    let vecY = Math.sin(radians(angle)) * amount;
+    return [vecX, vecY];
 }
 
 export function rotate(x, y, angle) {

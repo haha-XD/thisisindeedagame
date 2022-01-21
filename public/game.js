@@ -1,8 +1,10 @@
 import * as entityOps from './common/entityOperations.js';
-import { rotate } from './common/helper.js';
+import { rotate, radians } from './common/helper.js';
 
 let Game = function(canvas, socket) {
     this.localEntities = []
+    this.wallEntities = []
+    this.playerEntity = null;
     //rendering
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
@@ -52,17 +54,15 @@ Game.prototype.update = function() {
     this.updateEntities();
     this.draw();
 
-    for(let entity of this.localEntities) {
-        if(entity.socketId == this.clientId) {
-            document.getElementById('positionStatus').textContent = `x: ${entity.x | 0}, y: ${entity.y | 0} lastAckNum: ${this.lastAckNum} screenRot: ${this.screenRot | 0}`;
-        }
-    }
+    let player = this.playerEntity;
+    document.getElementById('positionStatus').textContent = `x: ${player.x | 0}, y: ${player.y | 0} lastAckNum: ${this.lastAckNum} screenRot: ${this.screenRot | 0}`;
 }
 
 Game.prototype.updateEntities = function() {
-    for(let entity of this.localEntities) {
-        if (entity.entityId == "bullet") {
-            //entityOps.advanceEntity(entity, 90, 45)
+    for (let entity of this.localEntities) {
+        if (entity != this.playerEntity) {
+            if (entityOps.detectEntityCollision(entity, this.playerEntity)) {
+            }
         }
     }
 }
@@ -75,56 +75,66 @@ Game.prototype.processServerMessages = function() {
         }
         this.localEntities = message['state'];
         this.lastAckNum = message['num'];
+
+        //categorizing
+        for(let entity of this.localEntities) {
+            if (entity.socketId == this.clientId) {
+                this.playerEntity = entity;
+            }
+        }
+        this.wallEntities = this.localEntities.filter(entity => entity.entityId == 'wall')
+        //
+
         this.performServerReconciliation();
     }        
 }
 
 Game.prototype.performServerReconciliation = function() {
-    //-1.identify player by an id?
-    //0.find player
-    //1.go through pending inputs 
-    //2.find and delete inputs that the server has already processed via last_proc_num
-    //3.apply inputs to player 
-    //4.client is now making decisions before hte server 
+    this.pendingInputStates = this.pendingInputStates.filter(input => input.num > this.lastAckNum);
+    if(this.pendingInputStates) {
+        for (let input of this.pendingInputStates) {
+            entityOps.applyInput(input.rot, input.inputs, this.playerEntity, this.wallEntities);            
+        }
+    }
+
+}
+
+Game.prototype.draw = function() {
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    const centerX = this.canvas.width/2
+    const centerY = this.canvas.height/2
     for (let entity of this.localEntities) {
-        if (entity.socketId == this.clientId) {
-            //console.log(`old:x${entity.x}y${entity.y}`)
-            this.pendingInputStates = this.pendingInputStates.filter(input => input.num > this.lastAckNum);
-            if(this.pendingInputStates) {
-                for (let input of this.pendingInputStates) {
-                    entityOps.applyInput(input.rot, input.inputs, entity);            
-                }
-                //console.log(`new:x${entity.x}y${entity. y}`)
-            }
+
+        let cEntityX = entity.x - this.playerEntity.x;
+        let cEntityY = entity.y - this.playerEntity.y;
+        let [x, y] = rotate(cEntityX, cEntityY, this.screenRot);
+        x += centerX;
+        y += centerY;
+
+        if(entity.entityId == 'wall') {
+            this.blitRotated(entity, x, y);
+        } else {
+            this.blit(entity, x, y);
         }
     }
 }
 
-Game.prototype.draw = function() {
-    let playerX = 0;
-    let playerY = 0;
-    for (let entity of this.localEntities) {
-        if (entity.socketId == this.clientId)  {
-            playerX = entity.x
-            playerY = entity.y
-            break;
-        }
-    }
-    
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    for(let entity of this.localEntities) {
-        let cEntityX = entity.x - playerX;
-        let cEntityY = entity.y - playerY;
-        let [x, y] = rotate(cEntityX, cEntityY, this.screenRot);
-        x += playerX;
-        y += playerY;
+Game.prototype.blitRotated = function(entity, x, y) {
+    this.ctx.save()
+        this.ctx.translate(x, y)
+        this.ctx.rotate(radians(this.screenRot))
+        this.ctx.fillStyle = 'grey';
+        this.ctx.fillRect(-(entity.size / 2), 
+                          -(entity.size / 2), 
+                          entity.size, entity.size);
+    this.ctx.restore()
+}
 
-        this.ctx.beginPath();
-        this.ctx.rect(x - (entity.size / 2) + 300 - playerX, 
-                      y - (entity.size / 2) + 300 - playerY, 
+Game.prototype.blit = function(entity, x, y) {
+    this.ctx.fillStyle = 'black';
+    this.ctx.fillRect(x-(entity.size / 2), 
+                      y-(entity.size / 2), 
                       entity.size, entity.size);
-        this.ctx.stroke();
-    }
 }
 
 Game.prototype.processInputs = function() {
@@ -145,12 +155,9 @@ Game.prototype.processInputs = function() {
 
         this.socket.emit('inputs', packagedInput);    
         
-        for(let entity of this.localEntities) {
-            if (entity.socketId == this.clientId) {
-                this.clApplyInputs(tempInputs);
-                entityOps.applyInput(this.screenRot, tempInputs, entity)
-            }
-        }
+        this.clApplyInputs(tempInputs);
+        entityOps.applyInput(this.screenRot, tempInputs, this.playerEntity, this.wallEntities);
+
         this.pendingInputStates.push(packagedInput)
         this.cmdNum += 1;
     }
@@ -163,18 +170,20 @@ Game.prototype.clApplyInputs = function(inputs) {
     if (inputs[69]) {
         this.screenRot -= inputs[69] * this.screenRotSpeed
     }
-
+    if (inputs[84]) {
+        this.screenRot = 0
+    }
 }
 
 Game.prototype.attachEventHandlers = function() {
 	(function(self) {			
 		window.addEventListener('keydown', function (e) {
-            if([87, 83, 68, 65, 81, 69].includes(e.keyCode)) {
+            if([87, 83, 68, 65, 81, 69, 84].includes(e.keyCode)) {
 			    self.controller[e.keyCode] = true;
             }
 		})
 		window.addEventListener('keyup', function (e) {
-            if([87, 83, 68, 65, 81, 69].includes(e.keyCode)) {
+            if([87, 83, 68, 65, 81, 69, 84].includes(e.keyCode)) {
 			    self.controller[e.keyCode] = false;
             }
 		})

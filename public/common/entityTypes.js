@@ -19,3 +19,9 @@ export let Bullet = function(x, y, spd, size, dir) {
 	this.entityId = 'bullet'
 	this.direction = dir;
 }
+
+export let Wall = function(x, y, size) {
+	BaseEntity.call(this, x, y, null, size);
+
+	this.entityId = 'wall'
+}

@@ -24,12 +24,15 @@ io.on('connection', (socket) => {
 		let cmdNum = data['num'];
 		let inputs = data['inputs'];
 		let screenRot = data['rot'];
-		entityOps.applyInput(screenRot, inputs, socket.playerEntity);
+		let wallEntities = svEntities.filter(entity => entity.entityId == 'wall')
+		entityOps.applyInput(screenRot, inputs, socket.playerEntity, wallEntities);
 		socket.lastAckNum = cmdNum;
 	})	
 
 	socket.on('testBulletRequest', () => {
-		svEntities.push(new entityTypes.Bullet(200, 200, 20, 16, 0))
+		svEntities.push(new entityTypes.Wall(200, 200, 32))
+		svEntities.push(new entityTypes.Wall(200, 232, 32))
+		svEntities.push(new entityTypes.Wall(200, 264, 32))
 	})
 
 	setInterval(() => {socket.emit('update', {num: socket.lastAckNum,
