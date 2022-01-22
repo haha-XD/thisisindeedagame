@@ -1,0 +1,1 @@
+export let TILE_SIZE = 32
