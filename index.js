@@ -20,10 +20,10 @@ svEntities = loadMap('nexus');
 console.log(svEntities)
 
 io.on('connection', (socket) => {
-	socket.playerEntity = new entityTypes.Player(100, 100, 200, 32, socket.id);
+	socket.playerEntity = new entityTypes.Player(100, 100, 300, 32, socket.id);
 	socket.currentArea = null;
 	socket.lastAckNum = 0;
-	svEntities.push(socket.playerEntity);
+	svEntities.push(socket.playerEntity);wdwqdqwwwwwd	
 
 	console.log('[SERVER] a user has connected');	
 	console.log(socket.playerEntity);
