@@ -23,7 +23,7 @@ io.on('connection', (socket) => {
 	socket.playerEntity = new entityTypes.Player(100, 100, 300, 32, socket.id);
 	socket.currentArea = null;
 	socket.lastAckNum = 0;
-	svEntities.push(socket.playerEntity);wdwqdqwwwwwd	
+	svEntities.push(socket.playerEntity);
 
 	console.log('[SERVER] a user has connected');	
 	console.log(socket.playerEntity);
