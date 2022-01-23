@@ -153,7 +153,7 @@ Game.prototype.processInputs = function() {
     if(Object.keys(tempInputs).length != 0) {
         this.clApplyInputs(tempInputs);
         
-        if (Object.keys(tempInputs).filter(key => [87, 83, 68, 65].includes(key))) {
+        if (Object.keys(tempInputs).filter(key => ['87','83','68','65'].includes(key)).length != 0) {
             let packagedInput = {rot: this.screenRot, num: this.cmdNum, inputs: tempInputs}
 
             this.socket.emit('inputs', packagedInput);    
