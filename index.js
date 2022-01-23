@@ -34,7 +34,7 @@ io.on('connection', (socket) => {
 		let screenRot = data['rot'];
 		let wallEntities = svEntities.filter(entity => entity.entityId == 'wall')
 		entityOps.applyInput(screenRot, inputs, socket.playerEntity, wallEntities);
-		socket.lastAckNum = cmdNum;
+		socket.lastAckNum = cmdNum;	
 	})	
 
 	socket.on('testBulletRequest', () => {
