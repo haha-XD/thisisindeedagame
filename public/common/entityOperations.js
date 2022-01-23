@@ -17,7 +17,7 @@ export function applyInput(rot, inputs, entity, wallEntities) {
 
 export function advanceEntity(entity, angle, amount, wallEntities) {
     console.log(amount)
-    if(amount > 0.08) {
+    if(Math.abs(amount) >= 0.01) {
         return
     }
     let movementVec = advance(angle, amount * entity.speed);
@@ -33,7 +33,7 @@ export function advanceEntity(entity, angle, amount, wallEntities) {
             }
         }    
     }
-    entity.x += movementVec[0];
+    entity.x += movementVec[0];e
     for (let wallEntity of wallEntities) {
         if (detectEntityCollision(entity, wallEntity)) {
             if (movementVec[0] > 0) {
