@@ -21,7 +21,7 @@ console.log(svEntities)
 
 io.on('connection', (socket) => {
 	socket.playerEntity = new entityTypes.Player(100, 100, 200, 32, socket.id);
-	socket.currentArea = null;dwqdwq
+	socket.currentArea = null;
 	socket.lastAckNum = 0;
 	svEntities.push(socket.playerEntity);
 
