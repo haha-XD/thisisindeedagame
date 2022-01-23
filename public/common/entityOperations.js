@@ -33,7 +33,7 @@ export function advanceEntity(entity, angle, amount, wallEntities) {
             }
         }    
     }
-    entity.x += movementVec[0];e
+    entity.x += movementVec[0];
     for (let wallEntity of wallEntities) {
         if (detectEntityCollision(entity, wallEntity)) {
             if (movementVec[0] > 0) {
