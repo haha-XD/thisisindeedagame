@@ -44,7 +44,7 @@ io.on('connection', (socket) => {
 	})
 
 	setInterval(() => {socket.emit('update', {num: socket.lastAckNum,
-										  	  state: svEntities})}, 1000/50)
+										  	  state: svEntities})}, 1000/10)
 })
 
 let port = process.env.PORT;
