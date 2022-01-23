@@ -1,1 +1,1 @@
-export let TILE_SIZE = 32
+export let TILE_SIZE = 38
