@@ -151,15 +151,17 @@ Game.prototype.processInputs = function() {
 	}
     
     if(Object.keys(tempInputs).length != 0) {
-        let packagedInput = {rot: this.screenRot, num: this.cmdNum, inputs: tempInputs}
-
-        this.socket.emit('inputs', packagedInput);    
-        
         this.clApplyInputs(tempInputs);
-        entityOps.applyInput(this.screenRot, tempInputs, this.playerEntity, this.wallEntities);
+        
+        if (Object.keys(tempInputs).filter(key => [87, 83, 68, 65].includes(key))) {
+            let packagedInput = {rot: this.screenRot, num: this.cmdNum, inputs: tempInputs}
 
-        this.pendingInputStates.push(packagedInput)
-        this.cmdNum += 1;
+            this.socket.emit('inputs', packagedInput);    
+            entityOps.applyInput(this.screenRot, tempInputs, this.playerEntity, this.wallEntities);
+            this.pendingInputStates.push(packagedInput)
+    
+            this.cmdNum += 1;    
+        }
     }
 }
 
