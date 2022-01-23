@@ -20,7 +20,7 @@ svEntities = loadMap('nexus');
 console.log(svEntities)
 
 io.on('connection', (socket) => {
-	socket.playerEntity = new entityTypes.Player(100, 100, 1000, 32, socket.id);
+	socket.playerEntity = new entityTypes.Player(100, 100, 500, 32, socket.id);
 	socket.currentArea = null;
 	socket.lastAckNum = 0;
 	svEntities.push(socket.playerEntity);
