@@ -18,8 +18,8 @@ let chunks = new Proxy({}, {
 })
 
 for(let entity of svEntities) {
-	chunkX = Math.trunc(entity.x / CHUNK_SIZE)
-	chunkY = Math.trunc(entity.y / CHUNK_SIZE)
+	let chunkX = Math.trunc(entity.x / CHUNK_SIZE)
+	let chunkY = Math.trunc(entity.y / CHUNK_SIZE)
 	chunks[chunkX, chunkY] = [entity];
 }
 
