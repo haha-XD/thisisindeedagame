@@ -1,4 +1,5 @@
 import { advance } from './helper.js' 
+import { CHUNK_SIZE } from './constants.js' 
 
 export function applyInput(rot, inputs, entity, wallEntities) {
     if (inputs[87]) { //w 
@@ -16,7 +17,6 @@ export function applyInput(rot, inputs, entity, wallEntities) {
 }
 
 export function advanceEntity(entity, angle, amount, wallEntities) {
-    console.log(amount)
     if(Math.abs(amount) > 0.01) {
         return
     }
@@ -73,4 +73,9 @@ export function detectEntityCollision(entity1, entity2) {
     } else {
         return false;
     }
+}
+
+export function entityChunkLoc(entity) {
+    return [Math.trunc(entity.x/CHUNK_SIZE),
+            Math.trunc(entity.y/CHUNK_SIZE)];
 }

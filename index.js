@@ -7,21 +7,14 @@ const io = new Server(server);
 
 import * as entityTypes from './public/common/entityTypes.js';
 import * as entityOps from './public/common/entityOperations.js';
-import { loadMap } from './server_modules/levelMap.js';
-import { CHUNK_SIZE } from './server_modules/constants.js';
+import * as lMap from './server_modules/levelMap.js';
 
 app.use(express.static('public'));
 
-let svEntities = loadMap('nexus');
-let chunks = new Proxy({}, {
-	get: (target, name) => name in target ? target[name] : []
-})
+let svEntities = lMap.loadMap('nexus');
+let chunks = lMap.updateChunks(svEntities);
 
-for(let entity of svEntities) {
-	let chunkX = Math.trunc(entity.x / CHUNK_SIZE)
-	let chunkY = Math.trunc(entity.y / CHUNK_SIZE)
-	chunks[chunkX, chunkY] = [entity];
-}
+console.log(chunks)
 
 io.on('connection', (socket) => {
 	socket.playerEntity = new entityTypes.Player(100, 100, 500, 32, socket.id);
@@ -49,7 +42,11 @@ io.on('connection', (socket) => {
 
 	setInterval(() => {
 		socket.emit('update', {num: socket.lastAckNum,
-     	    				   state: svEntities})
+     	    				   state: lMap.getVisibleChunks(
+										entityOps.entityChunkLoc(socket.playerEntity),
+										chunks
+							   )
+		});
 	}, 1000/10)
 })
 
@@ -59,4 +56,7 @@ if (port == null || port == "") {
 }
 server.listen(port, () => {
 	console.log(`[SERVER] now listening to port ${port}`);
+	setInterval(() => {
+		chunks = lMap.updateChunks(svEntities);
+	}, 1000/10);
 });

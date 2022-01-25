@@ -1,6 +1,7 @@
 import fs from 'fs';
 import * as entityTypes from '../public/common/entityTypes.js';
-import { TILE_SIZE } from './constants.js';
+import { TILE_SIZE, CHUNK_SIZE } from '../public/common/constants.js';
+import { DefaultDict } from '../public/common/helper.js';
 
 const entityDict = {
     '#' : entityTypes.Wall
@@ -26,4 +27,26 @@ export function loadMap(mapName) {
         console.error(err)
     }
 
+}
+
+export function updateChunks(entities) {	
+	let tChunks = new DefaultDict(Array);
+
+	for(let entity of entities) {
+		let chunkX = Math.trunc(entity.x / CHUNK_SIZE)
+		let chunkY = Math.trunc(entity.y / CHUNK_SIZE)
+		tChunks[[chunkX, chunkY]].push(entity);
+	}	
+	return tChunks
+}
+
+export function getVisibleChunks(chunkLoc, chunks) {
+    let result = []
+    for (let nx = -1; nx < 2; nx++) {
+        for (let ny = -1; ny < 2; ny++) {
+            result = result.concat(chunks[[chunkLoc[0]+nx, chunkLoc[1]+ny]]);
+        }
+    }
+    console.log(result.length)
+    return result
 }

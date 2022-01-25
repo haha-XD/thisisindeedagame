@@ -13,3 +13,17 @@ export function rotate(x, y, angle) {
     let rotY = x * Math.sin(radians(angle)) + y * Math.cos(radians(angle));
     return [rotX, rotY];
 }
+
+export class DefaultDict {
+    constructor(defaultInit) {
+      return new Proxy({}, {
+        get: (target, name) => name in target ?
+          target[name] :
+          (target[name] = typeof defaultInit === 'function' ?
+            new defaultInit().valueOf() :
+            defaultInit)
+      })
+    }
+}
+  
+  
