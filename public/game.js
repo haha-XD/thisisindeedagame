@@ -105,11 +105,11 @@ Game.prototype.draw = function() {
     const centerY = this.canvas.height/2
     for (let entity of this.localEntities) {
 
-        let cEntityX = entity.x - this.playerEntity.x;
-        let cEntityY = entity.y - this.playerEntity.y;
+        let cEntityX = Math.trunc(entity.x - this.playerEntity.x);
+        let cEntityY = Math.trunc(entity.y - this.playerEntity.y);
         let [x, y] = rotate(cEntityX, cEntityY, this.screenRot);
-        x = Math.trunc(x + centerX);
-        y = Math.trunc(y + centerY);
+        x += centerX;
+        y += centerY;
 
         if(entity.entityId == 'wall') {
             this.blitRotated(entity, x, y);
