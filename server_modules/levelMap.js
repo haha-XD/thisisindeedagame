@@ -47,6 +47,5 @@ export function getVisibleChunks(chunkLoc, chunks) {
             result = result.concat(chunks[[chunkLoc[0]+nx, chunkLoc[1]+ny]]);
         }
     }
-    console.log(result.length)
     return result
 }

@@ -17,7 +17,8 @@ export function applyInput(rot, inputs, entity, wallEntities) {
 }
 
 export function advanceEntity(entity, angle, amount, wallEntities) {
-    if(Math.abs(amount) > 0.01) {
+    console.log(amount)
+    if(Math.abs(amount) > 0.016) {
         return
     }
     let movementVec = advance(angle, amount * entity.speed);
