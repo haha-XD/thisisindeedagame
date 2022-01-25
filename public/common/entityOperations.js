@@ -1,27 +1,27 @@
-import { advance } from './helper.js' 
+import { advance, addVectors } from './helper.js' 
 import { CHUNK_SIZE } from './constants.js' 
 
 export function applyInput(rot, inputs, entity, wallEntities) {
-    if (inputs[87]) { //w 
-        advanceEntity(entity, -rot+90, -inputs[87], wallEntities)
+    let movementVec = [0,0]
+    if (inputs[87] && inputs[87] <= 0.3) { //w 
+        movementVec = addVectors(advance(-rot+90, -inputs[87]), movementVec)
     }
-    if (inputs[83]) { //s
-        advanceEntity(entity, -rot+90, inputs[83], wallEntities)
+    if (inputs[83] && inputs[83] <= 0.3) { //s
+        movementVec = addVectors(advance(-rot+90, inputs[83]), movementVec)
     }
-    if (inputs[68]) { //d
-        advanceEntity(entity, -rot, inputs[68], wallEntities)
+    if (inputs[68] && inputs[68] <= 0.3) { //d
+        movementVec = addVectors(advance(-rot, inputs[68]), movementVec)
     }
-    if (inputs[65]) { //a
-        advanceEntity(entity, -rot, -inputs[65], wallEntities)
+    if (inputs[65] && inputs[65] <= 0.3) { //a
+        movementVec = addVectors(advance(-rot, -inputs[65]), movementVec)
     }
-}
-
-export function advanceEntity(entity, angle, amount, wallEntities) {
-    console.log(amount)
-    if(Math.abs(amount) > 0.03) {
-        return
+    let magnitude = Math.sqrt(movementVec[0]**2 + movementVec[1]**2);
+    console.log(magnitude)
+    if (magnitude == 0) {
+        return;
     }
-    let movementVec = advance(angle, amount * entity.speed);
+    movementVec = [movementVec[0]/magnitude*entity.speed,
+                   movementVec[1]/magnitude*entity.speed] 
 
     entity.y += movementVec[1];
     for (let wallEntity of wallEntities) {
@@ -45,7 +45,12 @@ export function advanceEntity(entity, angle, amount, wallEntities) {
             }
         }    
     }
+}
 
+export function advanceEntity(entity, angle, amount) {
+    let movementVec = advance(angle, amount * entity.speed);
+    entity.x += movementVec[0];
+    entity.y += movementVec[1];
 }
 
 export function entityTop(entity) {

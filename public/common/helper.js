@@ -14,6 +14,10 @@ export function rotate(x, y, angle) {
     return [rotX, rotY];
 }
 
+export function addVectors(vec1, vec2) {
+    return [vec1[0] + vec2[0], vec1[1] + vec2[1]];
+}
+
 export class DefaultDict {
     constructor(defaultInit) {
       return new Proxy({}, {
