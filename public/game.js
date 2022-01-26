@@ -59,6 +59,7 @@ Game.prototype.update = function() {
 }
 
 Game.prototype.updateEntities = function() {
+    console.log(this.localEntities.length)
     for (let entity of this.localEntities) {
         if (entity.entityId == 'bullet') {
 			let elapsedTime = new Date().getTime() - entity.creationTS; 
