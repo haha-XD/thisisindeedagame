@@ -55,13 +55,19 @@ if (port == null || port == "") {
 }
 
 function update() {
+	let tRmvArray = []
 	for (let entity of svEntities) {
 		if (entity.entityId == 'bullet') {
 			let elapsedTime = new Date().getTime() - entity.creationTS; 
 			entity.x = entity.oX + elapsedTime/10*entity.speed*Math.cos(radians(entity.direction));
 			entity.y = entity.oY + elapsedTime/10*entity.speed*Math.sin(radians(entity.direction));
+			
+			if (Math.abs(entity.x) > 1000 || Math.abs(entity.y) > 1000) {
+				tRmvArray.push(entity)
+			} 
 		}
 	}
+	svEntities = svEntities.filter(entity => !(tRmvArray.includes(entity)));
 	chunks = lMap.updateChunks(svEntities);
 }
 
