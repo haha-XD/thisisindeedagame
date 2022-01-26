@@ -120,17 +120,17 @@ Game.prototype.draw = function() {
         }
     }
 
-    let tempCanvas = document.createElement('tCanvas');
-    let tempCtx = tempCanvas.getContext('2d'); 
-    let gradient = tempCtx.createRadialGradient(centerX, centerY, 5, centerX, centerY, centerX)
-    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.5)');
-    gradient.addColorStop(1, 'rgba(255, 255, 255, 1)');
-    tempCtx.arc(centerX, centerY, centerX, 0, 2*Math.PI);
-    tempCtx.fillStyle = gradient;
-    tempCtx.fill();
-
-    this.ctx.drawImage(tempCanvas, 0,0, this.canvas.width, this.canvas.height)
-}
+    let maskCanvas = document.createElement('canvas');
+    maskCanvas.width = this.canvas.width;
+    maskCanvas.height = this.canvas.height;
+    let maskCtx = maskCanvas.getContext('2d');
+    maskCtx.fillStyle = 'black'
+    maskCtx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
+    maskCtx.globalCompositeOperation = 'xor';
+    maskCtx.arc(centerX, centerY, 300, 0, 2 * Math.PI);
+    maskCtx.fill();
+    this.ctx.drawImage(maskCanvas, 0, 0);
+}    
 
 Game.prototype.blitRotated = function(entity, x, y) {
     this.ctx.save()
