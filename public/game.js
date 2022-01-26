@@ -50,8 +50,8 @@ Game.prototype.update = function() {
         return;
     }
     this.processServerMessages();
-	this.processInputs(); 
     this.updateEntities();
+	this.processInputs(); 
     this.draw();
 
     let player = this.playerEntity;
