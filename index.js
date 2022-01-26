@@ -34,6 +34,9 @@ io.on('connection', (socket) => {
 	})	
 
 	socket.on('testBulletRequest', () => {
+		for (let i = 0; i < 37; i++) {
+			svEntities.push(new entityTypes.Bullet(100, 100, 3, 16, i * 10));			
+		}
 	})
 
 	setInterval(() => {
@@ -70,10 +73,5 @@ function update() {
 
 server.listen(port, () => {
 	console.log(`[SERVER] now listening to port ${port}`);
-	setInterval(() => {
-		for (let i = 0; i < 37; i++) {
-			svEntities.push(new entityTypes.Bullet(100, 100, 3, 16, i * 10));			
-		}
-	}, 1000/2)
 	setInterval(update, 1000/10);
 });
