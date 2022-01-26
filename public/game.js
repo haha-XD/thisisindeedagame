@@ -60,9 +60,14 @@ Game.prototype.update = function() {
 
 Game.prototype.updateEntities = function() {
     for (let entity of this.localEntities) {
+        if (entity.entityId == 'bullet') {
+			let elapsedTime = new Date().getTime() - entity.creationTS; 
+			entity.x = entity.oX + elapsedTime/10*entity.speed*Math.cos(radians(entity.direction));
+			entity.y = entity.oY + elapsedTime/10*entity.speed*Math.sin(radians(entity.direction));
+        }
     }
 }
-
+ 7
 Game.prototype.processServerMessages = function() {
     while (true) {
         let message = this.networkQueue.shift()

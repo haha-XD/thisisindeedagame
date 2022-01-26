@@ -8,6 +8,7 @@ const io = new Server(server);
 import * as entityTypes from './public/common/entityTypes.js';
 import * as entityOps from './public/common/entityOperations.js';
 import * as lMap from './server_modules/levelMap.js';
+import { radians } from './public/common/helper.js';
 
 app.use(express.static('public'));
 
@@ -33,7 +34,7 @@ io.on('connection', (socket) => {
 	})	
 
 	socket.on('testBulletRequest', () => {
-		svEntities.push(new entityTypes.Bullet(100, 100, 2, 16, 45));
+		svEntities.push(new entityTypes.Bullet(100, 100, 3, 16, 45));
 	})
 
 	setInterval(() => {
@@ -54,7 +55,9 @@ if (port == null || port == "") {
 function update() {
 	for (let entity of svEntities) {
 		if (entity.entityId == 'bullet') {
-			entityOps.advanceEntity(entity, entity.direction, entity.speed);
+			let elapsedTime = new Date().getTime() - entity.creationTS; 
+			entity.x = entity.oX + elapsedTime/10*entity.speed*Math.cos(radians(entity.direction));
+			entity.y = entity.oY + elapsedTime/10*entity.speed*Math.sin(radians(entity.direction));
 		}
 	}
 	chunks = lMap.updateChunks(svEntities);
