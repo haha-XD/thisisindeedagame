@@ -34,6 +34,7 @@ io.on('connection', (socket) => {
 	})	
 
 	socket.on('testBulletRequest', () => {
+		console.log('spawning bullets')
 		for (let i = 0; i < 37; i++) {
 			svEntities.push(new entityTypes.Bullet(100, 100, 3, 16, i * 10));			
 		}
