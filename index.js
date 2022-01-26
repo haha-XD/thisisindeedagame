@@ -34,7 +34,9 @@ io.on('connection', (socket) => {
 	})	
 
 	socket.on('testBulletRequest', () => {
-		svEntities.push(new entityTypes.Bullet(100, 100, 3, 16, 45));
+		for (let i = 0; i < 37; i++) {
+			svEntities.push(new entityTypes.Bullet(100, 100, 3, 16, i * 10));			
+		}
 	})
 
 	setInterval(() => {
