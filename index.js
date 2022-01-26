@@ -34,16 +34,16 @@ io.on('connection', (socket) => {
 	})	
 
 	socket.on('testBulletRequest', () => {
-		for (let i = 0; i < 37; i++) {
-			svEntities.push(new entityTypes.Bullet(100, 100, 3, 16, i * 10));			
+		for (let i = 0; i < 12; i++) {
+			svEntities.push(new entityTypes.Bullet(100, 100, 3, 16, i * 30));			
 		}
 		setTimeout(() => {
-		for (let i = 0; i < 37; i++) {
-			svEntities.push(new entityTypes.Bullet(100, 100, 3, 16, 5 + i * 10));			
+		for (let i = 0; i < 12; i++) {
+			svEntities.push(new entityTypes.Bullet(100, 100, 3, 16, 15 + i * 30));			
 		}}, 400);
 		setTimeout(() => {
-		for (let i = 0; i < 37; i++) {
-			svEntities.push(new entityTypes.Bullet(100, 100, 3, 16, i * 10));			
+		for (let i = 0; i < 12; i++) {
+			svEntities.push(new entityTypes.Bullet(100, 100, 3, 16, i * 30));			
 		}}, 800);
 	})
 
