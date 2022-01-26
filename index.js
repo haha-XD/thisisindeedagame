@@ -37,6 +37,12 @@ io.on('connection', (socket) => {
 		for (let i = 0; i < 37; i++) {
 			svEntities.push(new entityTypes.Bullet(100, 100, 3, 16, i * 10));			
 		}
+		for (let i = 0; i < 37; i++) {
+			svEntities.push(new entityTypes.Bullet(100, 100, 3, 16, 5 + i * 10));			
+		}
+		for (let i = 0; i < 37; i++) {
+			svEntities.push(new entityTypes.Bullet(100, 100, 3, 16, i * 10));			
+		}
 	})
 
 	setInterval(() => {
