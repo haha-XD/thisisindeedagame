@@ -14,8 +14,6 @@ app.use(express.static('public'));
 let svEntities = lMap.loadMap('nexus');
 let chunks = lMap.updateChunks(svEntities);
 
-console.log(chunks)
-
 io.on('connection', (socket) => {
 	socket.playerEntity = new entityTypes.Player(100, 100, 5, 32, socket.id);
 	socket.currentArea = null;
@@ -35,9 +33,7 @@ io.on('connection', (socket) => {
 	})	
 
 	socket.on('testBulletRequest', () => {
-		svEntities.push(new entityTypes.Wall(200, 200, 32))
-		svEntities.push(new entityTypes.Wall(200, 232, 32))
-		svEntities.push(new entityTypes.Wall(200, 264, 32))
+		svEntities.push(new entityTypes.Bullet(100, 100, 2, 16, 45));
 	})
 
 	setInterval(() => {
@@ -54,9 +50,17 @@ let port = process.env.PORT;
 if (port == null || port == "") {
   port = 3000;
 }
+
+function update() {
+	for (let entity of svEntities) {
+		if (entity.entityId == 'bullet') {
+			entityOps.advanceEntity(entity, entity.direction, entity.speed);
+		}
+	}
+	chunks = lMap.updateChunks(svEntities);
+}
+
 server.listen(port, () => {
 	console.log(`[SERVER] now listening to port ${port}`);
-	setInterval(() => {
-		chunks = lMap.updateChunks(svEntities);
-	}, 1000/10);
+	setInterval(update, 1000/10);
 });

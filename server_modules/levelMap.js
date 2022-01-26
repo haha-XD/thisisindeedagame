@@ -35,6 +35,9 @@ export function updateChunks(entities) {
 	for(let entity of entities) {
 		let chunkX = Math.trunc(entity.x / CHUNK_SIZE)
 		let chunkY = Math.trunc(entity.y / CHUNK_SIZE)
+        if (entity.entityId == 'bullet') {
+            console.log(chunkX, chunkY)
+        }
 		tChunks[[chunkX, chunkY]].push(entity);
 	}	
 	return tChunks

@@ -2,6 +2,8 @@ export let BaseEntity = function(x, y, spd, size) {
 	this.creationTS = new Date().getTime(); 
 	this.x = x;
 	this.y = y;
+	this.oX = x;
+	this.oY = y;
 	this.speed = spd;
 	this.size = size;
 }

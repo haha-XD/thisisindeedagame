@@ -1,5 +1,5 @@
 import * as entityOps from './common/entityOperations.js';
-import { rotate, radians } from './common/helper.js';
+import { rotate, radians, advance } from './common/helper.js';
 
 let Game = function(canvas, socket) {
     this.localEntities = []
@@ -60,10 +60,6 @@ Game.prototype.update = function() {
 
 Game.prototype.updateEntities = function() {
     for (let entity of this.localEntities) {
-        if (entity != this.playerEntity) {
-            if (entityOps.detectEntityCollision(entity, this.playerEntity)) {
-            }
-        }
     }
 }
 

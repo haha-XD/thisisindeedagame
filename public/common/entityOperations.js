@@ -16,12 +16,12 @@ export function applyInput(rot, inputs, entity, wallEntities) {
         movementVec = addVectors(advance(-rot, -inputs[65]), movementVec)
     }
     let magnitude = Math.sqrt(movementVec[0]**2 + movementVec[1]**2);
-    console.log(magnitude)
     if (magnitude == 0) {
         return;
     }
     movementVec = [movementVec[0]/magnitude*entity.speed,
                    movementVec[1]/magnitude*entity.speed] 
+    //normalize movement vector then multiply by speed
 
     entity.y += movementVec[1];
     for (let wallEntity of wallEntities) {
