@@ -14,7 +14,6 @@ export let radialShotgun = function(x, y, spd, size, shotCount) {
 export function parsePattern(pattern, entities) {
     if (pattern.patternType == 'radial') {
         for(let i = 0; i < pattern.shotCount; i++) {
-            console.log('xd')
             let bullet = new Bullet(pattern.x, pattern.y, pattern.speed, pattern.size, i * (360/pattern.shotCount))
             bullet.creationTS = pattern.creationTS;
             entities.push(bullet);
