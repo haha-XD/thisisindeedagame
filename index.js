@@ -37,6 +37,7 @@ io.on('connection', (socket) => {
 	})	
 
 	socket.on('testBulletRequest', () => {
+		console.log('sending bullets')
 		bulletCommands.push(new bulletPattern.radialShotgun(100, 100, 2, 16, 10))
 	})
 
