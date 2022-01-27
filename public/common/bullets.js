@@ -15,7 +15,7 @@ export function parsePattern(pattern, entities) {
     if (pattern.patternType == 'radial') {
         for(let i = 0; i < pattern.shotCount; i++) {
             let bullet = new Bullet(pattern.x, pattern.y, pattern.speed, pattern.size, i * (360/pattern.shotCount))
-            bullet.creationTS = pattern.creationTS-1000;
+            bullet.creationTS = pattern.creationTS+1000;
             entities.push(bullet);
         }
     }
