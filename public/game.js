@@ -77,6 +77,7 @@ Game.prototype.processServerMessages = function() {
         }
         this.localEntities = message['state'];
         this.lastAckNum = message['num'];
+        console.log(message['bulletCommands'])
         for (let bulletPattern of message['bulletCommands']) {
             parsePattern(bulletPattern, this.localBulletEntities);
         }

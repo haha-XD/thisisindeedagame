@@ -37,6 +37,7 @@ io.on('connection', (socket) => {
 	})	
 
 	socket.on('testBulletRequest', () => {
+		bulletCommands.push(new bulletPattern.radialShotgun(100, 100, 2, 16, 10))
 	})
 
 	setInterval(() => {	
@@ -80,7 +81,4 @@ function update() {
 server.listen(port, () => {
 	console.log(`[SERVER] now listening to port ${port}`);
 	setInterval(update, 1000/10);
-	setInterval(() => {
-		bulletCommands.push(new bulletPattern.radialShotgun(100, 100, 2, 16, 10))
-	}, 1000);
 });
