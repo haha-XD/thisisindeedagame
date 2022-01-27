@@ -50,10 +50,7 @@ io.on('connection', (socket) => {
 							   bulletCommands: bulletCommands
 
 		});
-		for (let bulletPtn of bulletCommands) {
-			bulletPattern.parsePattern(bulletPtn, svBulletEntities);
-		}
-		bulletCommands = []
+		bulletPattern.parsePattern(bulletCommands.splice(0, 1)[0], svBulletEntities);
 	}, 1000/10)
 })
 
