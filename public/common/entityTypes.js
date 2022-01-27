@@ -27,3 +27,9 @@ export let Wall = function(x, y, size) {
 
 	this.entityId = 'wall'
 }
+
+export let BulletPattern = function(x, y, data) {
+	BaseEntity.call(this, x, y, null);
+	
+	this.entityId = 'bulletPattern'
+}

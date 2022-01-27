@@ -1,8 +1,10 @@
+import { parsePattern } from './common/bullets.js';
 import * as entityOps from './common/entityOperations.js';
 import { rotate, radians, advance } from './common/helper.js';
 
 let Game = function(canvas, socket) {
     this.localEntities = []
+    this.localBulletEntities = []
     this.wallEntities = []
     this.playerEntity = null;
     //rendering
@@ -59,13 +61,10 @@ Game.prototype.update = function() {
 }
 
 Game.prototype.updateEntities = function() {
-    console.log(this.localEntities.length)
-    for (let entity of this.localEntities) {
-        if (entity.entityId == 'bullet') {
-			let elapsedTime = new Date().getTime() - entity.creationTS; 
-			entity.x = entity.oX + elapsedTime/10*entity.speed*Math.cos(radians(entity.direction));
-			entity.y = entity.oY + elapsedTime/10*entity.speed*Math.sin(radians(entity.direction));
-        }
+    for (let entity of this.localBulletEntities) {
+        let elapsedTime = new Date().getTime() - entity.creationTS; 
+        entity.x = entity.oX + elapsedTime/10*entity.speed*Math.cos(radians(entity.direction));
+        entity.y = entity.oY + elapsedTime/10*entity.speed*Math.sin(radians(entity.direction));
     }
 }
  7
@@ -77,6 +76,10 @@ Game.prototype.processServerMessages = function() {
         }
         this.localEntities = message['state'];
         this.lastAckNum = message['num'];
+        for (let bulletPattern of message['bulletCommands']) {
+            parsePattern(bulletPattern, this.localBulletEntities);
+        }
+        console.log(this.localBulletEntities)
 
         //categorizing
         for(let entity of this.localEntities) {
@@ -105,7 +108,7 @@ Game.prototype.draw = function() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     const centerX = this.canvas.width/2
     const centerY = this.canvas.height/2
-    for (let entity of this.localEntities) {
+    for (let entity of this.localEntities.concat(this.localBulletEntities)) {
 
         let cEntityX = Math.trunc(entity.x - this.playerEntity.x);
         let cEntityY = Math.trunc(entity.y - this.playerEntity.y);
