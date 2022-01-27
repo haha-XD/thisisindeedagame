@@ -65,6 +65,7 @@ Game.prototype.updateEntities = function() {
         let elapsedTime = new Date().getTime() - entity.creationTS; 
         entity.x = entity.oX + elapsedTime/10*entity.speed*Math.cos(radians(entity.direction));
         entity.y = entity.oY + elapsedTime/10*entity.speed*Math.sin(radians(entity.direction));
+        console.log(entity.x, entity.y)
     }
 }
  7
@@ -76,7 +77,6 @@ Game.prototype.processServerMessages = function() {
         }
         this.localEntities = message['state'];
         this.lastAckNum = message['num'];
-        console.log(message['bulletCommands'])
         for (let bulletPattern of message['bulletCommands']) {
             parsePattern(bulletPattern, this.localBulletEntities);
         }
