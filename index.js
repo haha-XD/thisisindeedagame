@@ -43,7 +43,7 @@ io.on('connection', (socket) => {
 
 	socket.on('testBulletRequest', () => {
 		console.log('sending bullet')
-		spawnBullet(new bulletPattern.radialShotgun(100, 100, 2, 16, 5));
+		spawnBullet(new bulletPattern.radialShotgun(100, 100, 2, 16, 10));
 	})
 
 	setInterval(() => {	
