@@ -79,7 +79,4 @@ server.listen(port, () => {
 	setInterval(() => {
 		spawnBullet(new bulletPattern.radialShotgun(100, 100, 3, 16, 2, 36, 0));
 	}, 1000/3)
-	setInterval(() => {
-		spawnBullet(new bulletPattern.radialShotgun(100, 100, 2, 8, 3, 18, 18));
-	}, 1000)
 });
