@@ -67,6 +67,11 @@ function update() {
 		if (!(bulletPattern.updateBullet(entity))) {
 			tempArray.push(entity)
 		}	
+		for(let player of playerEntities) {
+			if (entityOps.detectEntityCollision(entity, player)) {
+				console.log('lol')
+			}
+		}
 	}
 	svBulletEntities = svBulletEntities.filter(element => !tempArray.includes(element))
 
@@ -77,6 +82,6 @@ server.listen(port, () => {
 	console.log(`[SERVER] now listening to port ${port}`);
 	setInterval(update, 1000/15);
 	setInterval(() => {
-		spawnBullet(new bulletPattern.radialShotgun(100, 100, 3, 16, 2, 36, 0));
-	}, 1000/3)
+		spawnBullet(new bulletPattern.radialShotgun(100, 100, 3, 16, 2, 10, 0));
+	}, 1000)
 });

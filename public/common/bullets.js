@@ -31,7 +31,6 @@ export function updateBullet(entity) {
 }
 
 export function parsePattern(pattern, entities) {
-    console.log(pattern)
     if (pattern.patternType == 'radial') {
         for(let i = 0; i < pattern.shotCount; i++) {
             let bullet = new Bullet(pattern.x, pattern.y, 
