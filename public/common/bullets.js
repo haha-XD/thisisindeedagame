@@ -12,10 +12,11 @@ export let BasePattern = function(x, y, spd, size, lifetime) {
     this.lifetime = lifetime //seconds
 }
 
-export let radialShotgun = function(x, y, spd, size, lifetime, shotCount) {
+export let radialShotgun = function(x, y, spd, size, lifetime, shotCount, startAngle) {
 	BasePattern.call(this, x, y, spd, size, lifetime);
 
     this.shotCount = shotCount;
+    this.startAngle = startAngle
     this.patternType = 'radial';
 }
 
@@ -36,7 +37,7 @@ export function parsePattern(pattern, entities) {
             let bullet = new Bullet(pattern.x, pattern.y, 
                                     pattern.speed, 
                                     pattern.size, 
-                                    i * (360/pattern.shotCount),
+                                    pattern.startAngle + i * (360/pattern.shotCount),
                                     pattern.lifetime)
             bullet.creationTS = pattern.creationTS+200;
             entities.push(bullet);
