@@ -43,7 +43,6 @@ io.on('connection', (socket) => {
 
 	socket.on('testBulletRequest', () => {
 		console.log('sending bullet')
-		spawnBullet(new bulletPattern.radialShotgun(100, 100, 2, 16, 10));
 	})
 
 	setInterval(() => {	
@@ -63,11 +62,13 @@ if (port == null || port == "") {
 }
 
 function update() {
+	let tempArray = []
 	for (let entity of svBulletEntities) {
-        let elapsedTime = new Date().getTime() - entity.creationTS; 
-        entity.x = entity.oX + elapsedTime/10*entity.speed*Math.cos(radians(entity.direction));
-        entity.y = entity.oY + elapsedTime/10*entity.speed*Math.sin(radians(entity.direction));
+		if (!(bulletPattern.updateBullet(entity))) {
+			tempArray.push(entity)
+		}
     }
+	svBulletEntities = svBulletEntities.filter(element => !tempArray.includes(element))
 
 	chunks = lMap.updateChunks(svEntities);
 }
@@ -75,4 +76,7 @@ function update() {
 server.listen(port, () => {
 	console.log(`[SERVER] now listening to port ${port}`);
 	setInterval(update, 1000/10);
+	setInterval(() => {
+		spawnBullet(new bulletPattern.radialShotgun(100, 100, 2, 16, 3, 20));
+	}, 1000/3)
 });

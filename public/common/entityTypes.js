@@ -15,10 +15,11 @@ export let Player = function(x, y, spd, size, socketId) {
 	this.socketId = socketId;
 }
 
-export let Bullet = function(x, y, spd, size, dir) {
+export let Bullet = function(x, y, spd, size, dir, lifetime) {
 	BaseEntity.call(this, x, y, spd, size);
 
 	this.entityId = 'bullet'
+	this.lifetime = lifetime;
 	this.direction = dir;
 }
 

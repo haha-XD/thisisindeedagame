@@ -1,6 +1,6 @@
-import { parsePattern } from './common/bullets.js';
+import { parsePattern, updateBullet } from './common/bullets.js';
 import * as entityOps from './common/entityOperations.js';
-import { rotate, radians, advance } from './common/helper.js';
+import { rotate, radians } from './common/helper.js';
 
 let Game = function(canvas, socket) {
     this.localEntities = []
@@ -65,12 +65,13 @@ Game.prototype.update = function() {
 }
 
 Game.prototype.updateEntities = function() {
-    for (let entity of this.localBulletEntities) {
-        let elapsedTime = new Date().getTime() - entity.creationTS; 
-        entity.x = entity.oX + elapsedTime/10*entity.speed*Math.cos(radians(entity.direction));
-        entity.y = entity.oY + elapsedTime/10*entity.speed*Math.sin(radians(entity.direction));
-        console.log(entity.x, entity.y)
+	let tempArray = []
+	for (let entity of this.localBulletEntities) {
+		if (!(updateBullet(entity))) {
+			tempArray.push(entity)
+		}
     }
+	this.localBulletEntities = this.localBulletEntities.filter(element => !tempArray.includes(element))
 }
  7
 Game.prototype.processServerMessages = function() {
