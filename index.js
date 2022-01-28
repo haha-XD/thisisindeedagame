@@ -70,7 +70,7 @@ function update() {
 	}
 	svBulletEntities = svBulletEntities.filter(element => !tempArray.includes(element))
 
-	chunks = lMap.updateChunks(wallEntities.concat(playerEntities, svBulletEntities));
+	chunks = lMap.updateChunks(wallEntities.concat(playerEntities));
 }
 
 server.listen(port, () => {
