@@ -20,6 +20,9 @@ let Game = function(canvas, socket) {
     this.socket.on('update', (data) => {
         this.networkQueue.push(data);
     }); 
+    this.socket.on('bullet', (data) => {
+        parsePattern(data, this.localBulletEntities);
+    }); 
     //updates
 	this.updateRate = 100;
     this.updateInterval = null;
@@ -27,6 +30,7 @@ let Game = function(canvas, socket) {
     this.lastTs = 0;
     this.controller = {};
     //server reconciliation
+    this.lastBulletAckNum = 0;
     this.lastAckNum = 0;
     this.cmdNum = 0
 	this.pendingInputStates = []; //an array of 'controllers' that are yet to be processed
@@ -77,10 +81,6 @@ Game.prototype.processServerMessages = function() {
         }
         this.localEntities = message['state'];
         this.lastAckNum = message['num'];
-        console.log(message['bulletCommands'].length)
-        for (let bulletPattern of message['bulletCommands']) {
-            parsePattern(bulletPattern, this.localBulletEntities);
-        }
         //categorizing
         for(let entity of this.localEntities) {
             if (entity.socketId == this.clientId) {
@@ -130,7 +130,7 @@ Game.prototype.draw = function() {
     maskCtx.fillStyle = 'black'
     maskCtx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
     maskCtx.globalCompositeOperation = 'xor';
-    maskCtx.arc(centerX, centerY, 300, 0, 2 * Math.PI);
+    maskCtx.arc(centerX, centerY, 400, 0, 2 * Math.PI);
     maskCtx.fill();
     this.ctx.drawImage(maskCanvas, 0, 0);
 }    
