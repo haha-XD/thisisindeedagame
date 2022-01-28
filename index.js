@@ -13,10 +13,11 @@ import { radians } from './public/common/helper.js'
 
 app.use(express.static('public'));
 
-let svEntities = lMap.loadMap('nexus');
-let chunks = lMap.updateChunks(svEntities);
-
+let wallEntities = lMap.loadMap('nexus');
+let playerEntities = []
 let svBulletEntities = [];
+
+let chunks = lMap.updateChunks(wallEntities); //because only walls exist when starting
 
 function spawnBullet(bullet) {
 	io.emit('bullet', bullet);
@@ -27,7 +28,7 @@ io.on('connection', (socket) => {
 	socket.playerEntity = new entityTypes.Player(100, 100, 5, 32, socket.id);
 	socket.currentArea = null;
 	socket.lastAckNum = 0;
-	svEntities.push(socket.playerEntity);
+	playerEntities.push(socket.playerEntity);
 
 	console.log('[SERVER] a user has connected');	
 	console.log(socket.playerEntity);
@@ -36,7 +37,6 @@ io.on('connection', (socket) => {
 		let cmdNum = data['num'];
 		let inputs = data['inputs'];
 		let screenRot = data['rot'];
-		let wallEntities = svEntities.filter(entity => entity.entityId == 'wall')
 		entityOps.applyInput(screenRot, inputs, socket.playerEntity, wallEntities);
 		socket.lastAckNum = cmdNum;	
 	})	
@@ -53,7 +53,7 @@ io.on('connection', (socket) => {
 							   )
 
 		});
-	}, 1000/10)
+	}, 1000/15)
 })
 
 let port = process.env.PORT;
@@ -66,16 +66,16 @@ function update() {
 	for (let entity of svBulletEntities) {
 		if (!(bulletPattern.updateBullet(entity))) {
 			tempArray.push(entity)
-		}
-    }
+		}	
+	}
 	svBulletEntities = svBulletEntities.filter(element => !tempArray.includes(element))
 
-	chunks = lMap.updateChunks(svEntities);
+	chunks = lMap.updateChunks(wallEntities.concat(playerEntities, svBulletEntities));
 }
 
 server.listen(port, () => {
 	console.log(`[SERVER] now listening to port ${port}`);
-	setInterval(update, 1000/10);
+	setInterval(update, 1000/15);
 	setInterval(() => {
 		spawnBullet(new bulletPattern.radialShotgun(100, 100, 3, 16, 2, 36, 0));
 	}, 1000/3)
