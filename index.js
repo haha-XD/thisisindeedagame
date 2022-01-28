@@ -14,6 +14,12 @@ app.use(express.static('public'));
 let svEntities = lMap.loadMap('nexus');
 let chunks = lMap.updateChunks(svEntities);
 
+let svBulletEntities = [];
+
+function spawnBullet(bullet) {
+	io.emit('bullet', bullet);
+	bulletPattern.parsePattern(bullet, svBulletEntities);
+}
 
 io.on('connection', (socket) => {
 	socket.playerEntity = new entityTypes.Player(100, 100, 5, 32, socket.id);
@@ -35,7 +41,7 @@ io.on('connection', (socket) => {
 
 	socket.on('testBulletRequest', () => {
 		console.log('sending bullet')
-		io.emit('bullet', new bulletPattern.radialShotgun(100, 100, 2, 16, 72));
+		spawnBullet(new bulletPattern.radialShotgun(100, 100, 2, 16, 72));
 	})
 
 	setInterval(() => {	
@@ -55,7 +61,12 @@ if (port == null || port == "") {
 }
 
 function update() {
-	let nowTS = new Date().getTime()
+	for (let entity of svBulletEntities) {
+        let elapsedTime = new Date().getTime() - entity.creationTS; 
+        entity.x = entity.oX + elapsedTime/10*entity.speed*Math.cos(radians(entity.direction));
+        entity.y = entity.oY + elapsedTime/10*entity.speed*Math.sin(radians(entity.direction));
+        console.log(entity.x, entity.y)
+    }
 
 	chunks = lMap.updateChunks(svEntities);
 }
