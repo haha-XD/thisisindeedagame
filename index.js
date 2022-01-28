@@ -9,6 +9,8 @@ import * as entityTypes from './public/common/entityTypes.js';
 import * as entityOps from './public/common/entityOperations.js';
 import * as lMap from './server_modules/levelMap.js';
 import * as bulletPattern from './public/common/bullets.js'
+import { radians } from './public/common/helper.js'
+
 app.use(express.static('public'));
 
 let svEntities = lMap.loadMap('nexus');
@@ -41,7 +43,7 @@ io.on('connection', (socket) => {
 
 	socket.on('testBulletRequest', () => {
 		console.log('sending bullet')
-		spawnBullet(new bulletPattern.radialShotgun(100, 100, 2, 16, 72));
+		spawnBullet(new bulletPattern.radialShotgun(100, 100, 2, 16, 5));
 	})
 
 	setInterval(() => {	
@@ -65,7 +67,6 @@ function update() {
         let elapsedTime = new Date().getTime() - entity.creationTS; 
         entity.x = entity.oX + elapsedTime/10*entity.speed*Math.cos(radians(entity.direction));
         entity.y = entity.oY + elapsedTime/10*entity.speed*Math.sin(radians(entity.direction));
-        console.log(entity.x, entity.y)
     }
 
 	chunks = lMap.updateChunks(svEntities);
