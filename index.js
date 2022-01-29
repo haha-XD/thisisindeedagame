@@ -80,10 +80,12 @@ function update() {
 	chunks = lMap.updateChunks(wallEntities.concat(playerEntities));
 }
 
+let x = 0;
 server.listen(port, () => {
 	console.log(`[SERVER] now listening to port ${port}`);
 	setInterval(update, 1000/15);
 	setInterval(() => {
-		spawnBullet(new bulletPattern.radialShotgun(100, 100, 3, 16, 2, 5, 10, 0));
-	}, 1000)
+		spawnBullet(new bulletPattern.radialShotgun(100, 100, 3, 16, 2, 5, 10, x));
+		x+= 18;
+	}, 1000/5)
 });
