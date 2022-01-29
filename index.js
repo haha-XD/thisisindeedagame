@@ -25,7 +25,7 @@ function spawnBullet(bullet) {
 }
 
 io.on('connection', (socket) => {
-	socket.playerEntity = new entityTypes.Player(100, 100, 5, 32, socket.id);
+	socket.playerEntity = new entityTypes.Player(300, 300, 5, 32, socket.id);
 	socket.currentArea = null;
 	socket.lastAckNum = 0;
 	playerEntities.push(socket.playerEntity);
@@ -74,6 +74,11 @@ function update() {
 				}
 			}
 		}
+		for(let wall of wallEntities) {
+			if(entityOps.detectEntityCollision(entity, wall)) {
+				tempArray.push(entity)
+			}
+		}
 	}
 	svBulletEntities = svBulletEntities.filter(element => !tempArray.includes(element))
 
@@ -85,7 +90,7 @@ server.listen(port, () => {
 	console.log(`[SERVER] now listening to port ${port}`);
 	setInterval(update, 1000/15);
 	setInterval(() => {
-		spawnBullet(new bulletPattern.radialShotgun(100, 100, 3, 16, 2, 5, 10, x));
+		spawnBullet(new bulletPattern.radialShotgun(200, 200, 3, 16, 2, 5, 10, x));
 		x+= 18;
 	}, 1000/5)
 });

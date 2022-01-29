@@ -72,6 +72,11 @@ Game.prototype.updateEntities = function() {
 		if (!(updateBullet(entity))) {
 			tempArray.push(entity)
 		}
+		for(let wall of this.wallEntities) {
+			if(entityOps.detectEntityCollision(entity, wall)) {
+				tempArray.push(entity)
+			}
+		}
     }
 	this.localBulletEntities = this.localBulletEntities.filter(element => !tempArray.includes(element))
 }
