@@ -61,7 +61,7 @@ Game.prototype.update = function() {
     this.draw();
 
     let player = this.playerEntity;
-    document.getElementById('positionStatus').textContent = `x: ${player.x | 0}, y: ${player.y | 0} lastAckNum: ${this.lastAckNum} screenRot: ${this.screenRot | 0} chunkLoc: ${entityOps.entityChunkLoc(player)}`;
+    document.getElementById('positionStatus').textContent = `x: ${player.x | 0}, y: ${player.y | 0} lastAckNum: ${this.lastAckNum} screenRot: ${this.screenRot | 0} chunkLoc: ${entityOps.entityChunkLoc(player)} hp: ${player.hp}`;
 }
 
 Game.prototype.updateEntities = function() {

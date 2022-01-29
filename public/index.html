@@ -1,13 +1,18 @@
 <html>
 	<head>
+		<link rel="stylesheet" type="text/css" href="./css/main.css">
 	</head>
 	<body>
 		<h1>wasd qe</h1>
 		<div id="positionStatus"></div>
 		<button id="testButton">test button</button>
 		<br>
-		<canvas id="gameCanvas" width="800" height="800" style="border:1px solid #000000;">this browser doesnt work with canvas</canvas></canvas>
 		
+		<div class="gameContainer">
+			<canvas id="gameCanvas" width="800" height="800" style="border:1px solid #000000;">this browser doesnt work with canvas</canvas></canvas>
+			<canvas id="gameUI" width="300" height="800" style="border:1px solid #000000;">this browser doesnt work with canvas</canvas></canvas>
+		</div>
+
 		<script type = "module">
 			import { Game } from './game.js';
 			import { io } from "https://cdn.socket.io/4.3.0/socket.io.esm.min.js";

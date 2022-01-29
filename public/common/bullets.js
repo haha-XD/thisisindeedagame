@@ -3,17 +3,18 @@ import { radians } from "./helper.js";
 
 let id = 0;
 
-export let BasePattern = function(x, y, spd, size, lifetime) {
+export let BasePattern = function(x, y, spd, size, lifetime, damage) {
     this.creationTS = new Date().getTime()
     this.x = x;
     this.y = y;
     this.speed = spd;
     this.size = size;
-    this.lifetime = lifetime //seconds
+    this.lifetime = lifetime; //seconds
+    this.damage = damage;
 }
 
-export let radialShotgun = function(x, y, spd, size, lifetime, shotCount, startAngle) {
-	BasePattern.call(this, x, y, spd, size, lifetime);
+export let radialShotgun = function(x, y, spd, size, lifetime, damage, shotCount, startAngle,) {
+	BasePattern.call(this, x, y, spd, size, lifetime, damage);
 
     this.shotCount = shotCount;
     this.startAngle = startAngle
@@ -37,7 +38,8 @@ export function parsePattern(pattern, entities) {
                                     pattern.speed, 
                                     pattern.size, 
                                     pattern.startAngle + i * (360/pattern.shotCount),
-                                    pattern.lifetime)
+                                    pattern.lifetime,
+                                    pattern.damage)
             bullet.creationTS = pattern.creationTS+200;
             entities.push(bullet);
         }

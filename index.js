@@ -69,7 +69,7 @@ function update() {
 		}	
 		for(let player of playerEntities) {
 			if (entityOps.detectEntityCollision(entity, player)) {
-				console.log('lol')
+				player.hp -= entity.damage
 			}
 		}
 	}
@@ -82,6 +82,6 @@ server.listen(port, () => {
 	console.log(`[SERVER] now listening to port ${port}`);
 	setInterval(update, 1000/15);
 	setInterval(() => {
-		spawnBullet(new bulletPattern.radialShotgun(100, 100, 3, 16, 2, 10, 0));
+		spawnBullet(new bulletPattern.radialShotgun(100, 100, 3, 16, 2, 5, 10, 0));
 	}, 1000)
 });
