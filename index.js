@@ -69,7 +69,9 @@ function update() {
 		}	
 		for(let player of playerEntities) {
 			if (entityOps.detectEntityCollision(entity, player)) {
-				player.hp -= entity.damage
+				if (player.hp > 0) {
+					player.hp -= entity.damage
+				}
 			}
 		}
 	}
