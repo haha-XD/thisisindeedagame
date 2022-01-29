@@ -17,7 +17,9 @@
 			import { Game } from './game.js';
 			import { io } from "https://cdn.socket.io/4.3.0/socket.io.esm.min.js";
 
-			let game = new Game(document.getElementById('gameCanvas'), io());
+			let game = new Game(document.getElementById('gameCanvas'), 
+								document.getElementById('gameUI'),
+								io());
 			game.initialize()
 
 			function sendBulletRequest() {

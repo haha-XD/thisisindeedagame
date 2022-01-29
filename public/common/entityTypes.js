@@ -12,7 +12,8 @@ export let Player = function(x, y, spd, size, socketId) {
 	BaseEntity.call(this, x, y, spd, size);
 
 	this.entityId = 'player'
-	this.hp = 10000
+	this.hp = 1000;
+	this.maxhp = this.hp;
 	this.socketId = socketId;
 }
 

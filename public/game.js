@@ -2,7 +2,7 @@ import { parsePattern, updateBullet } from './common/bullets.js';
 import * as entityOps from './common/entityOperations.js';
 import { rotate, radians } from './common/helper.js';
 
-let Game = function(canvas, socket) {
+let Game = function(canvas, UIcanvas, socket) {
     this.localEntities = []
     this.localBulletEntities = []
     this.wallEntities = []
@@ -10,6 +10,8 @@ let Game = function(canvas, socket) {
     //rendering
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
+    this.UIcanvas = UIcanvas;
+    this.UIctx = UIcanvas.getContext('2d');
     this.screenRot = 45;
     this.screenRotSpeed = 200
     //networking    
@@ -107,6 +109,7 @@ Game.prototype.performServerReconciliation = function() {
 
 Game.prototype.draw = function() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.UIctx.clearRect(0, 0, this.UIcanvas.width, this.UIcanvas.height);
     const centerX = this.canvas.width/2
     const centerY = this.canvas.height/2
     for (let entity of this.localEntities.concat(this.localBulletEntities)) {
@@ -117,13 +120,45 @@ Game.prototype.draw = function() {
         x += centerX;
         y += centerY;
 
-        if(entity.entityId == 'wall') {
+        if(entity.entityId == 'wall') { 
             this.blitRotated(entity, x, y);
         } else {
             this.blit(entity, x, y);
         }
     }
 
+    //minimap (placeholder)
+    this.UIctx.beginPath();
+    this.UIctx.fillStyle = "black";
+    this.UIctx.fillRect(0, 0, 
+                        this.UIcanvas.width, this.UIcanvas.height);
+    this.ctx.stroke();
+
+    //healthbar
+    this.UIctx.beginPath();
+    this.UIctx.fillStyle = "grey";
+    this.UIctx.fillRect(this.UIcanvas.width/30, 
+                        this.UIcanvas.height/2.5, 
+                        this.UIcanvas.width/30 * 28, 
+                        25);
+    this.UIctx.beginPath();
+    this.UIctx.fillStyle = "red";
+    this.UIctx.fillRect(this.UIcanvas.width/30, 
+                        this.UIcanvas.height/2.5, 
+                        this.UIcanvas.width/30 * 28 * (this.playerEntity.hp/this.playerEntity.maxhp), 
+                        25);
+    this.UIctx.fillStyle = "white";
+    this.UIctx.font = "20px Verdana";
+    this.UIctx.fillText("HP", 
+                        this.UIcanvas.width/15, 
+                        this.UIcanvas.height/2.35);
+    this.UIctx.font = "bold 18px helvetica";
+    this.UIctx.fillText(`${this.playerEntity.hp}/${this.playerEntity.maxhp}`, 
+                        this.UIcanvas.width/2.5, 
+                        this.UIcanvas.height/2.36);
+
+
+    //fog of war
     let maskCanvas = document.createElement('canvas');
     maskCanvas.width = this.canvas.width;
     maskCanvas.height = this.canvas.height;
