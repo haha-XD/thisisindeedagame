@@ -74,10 +74,8 @@ Game.prototype.updateEntities = function() {
 			tempArray.push(entity)
 		}
         if (entityOps.detectEntityCollision(entity, this.playerEntity)) {
-            if (this.playerEntity.hp > 0) {
-                this.playerEntity.hp -= entity.damage
-                this.socket.emit('dmg taken', entity)
-            }
+            this.socket.emit('dmg taken', entity)
+    
         }
 		for (let wall of this.wallEntities) {
 			if(entityOps.detectEntityCollision(entity, wall)) {
