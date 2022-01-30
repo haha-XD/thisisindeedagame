@@ -28,15 +28,15 @@ let startTime = 0;
 
 io.on('connection', (socket) => {
 	setInterval(() => {
-		startTime = new Date.getTime();
+		startTime = new Date().getTime();
 		socket.emit('ping');
 	}, 2000);
 	socket.on('pong', function() {
-		latency = new Date.getTime() - startTime;
-		console.log(latency);
+		let latency = new Date().getTime() - startTime;
+		console.log(latency, 'ms');
 	});
 
-	socket.playerEntity = new entityTypes.Player(300, 300, 5, 16, socket.id);
+	socket.playerEntity = new entityTypes.Player(300, 300, 5, 32, socket.id);
 	socket.currentArea = null;
 	socket.lastAckNum = 0;
 	playerEntities.push(socket.playerEntity);

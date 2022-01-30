@@ -26,8 +26,8 @@ let Game = function(canvas, UIcanvas, socket) {
     this.socket.on('bullet', (data) => {
         parsePattern(data, this.localBulletEntities);
     }); 
-    this.socket.on('pong', () => {
-        
+    this.socket.on('ping', () => {
+        this.socket.emit('pong');
     })
     //updates
 	this.updateRate = 100;
