@@ -9,22 +9,34 @@ import * as entityTypes from './public/common/entityTypes.js';
 import * as entityOps from './public/common/entityOperations.js';
 import * as lMap from './server_modules/levelMap.js';
 import * as bulletPattern from './public/common/bullets.js'
-import { radians } from './public/common/helper.js'
 
 app.use(express.static('public'));
 
 let wallEntities = lMap.loadMap('nexus');
 let playerEntities = [];
+let enemyEntities = [];
 
 let wallChunks = lMap.updateChunks(wallEntities);
 let playerChunks = lMap.updateChunks(playerEntities);
+let enemyChunks = lMap.updateChunks(enemyEntities);
 
 function spawnBullet(bullet) {
 	io.emit('bullet', bullet);
 }
 
+let startTime = 0;
+
 io.on('connection', (socket) => {
-	socket.playerEntity = new entityTypes.Player(300, 300, 5, 32, socket.id);
+	setInterval(() => {
+		startTime = new Date.getTime();
+		socket.emit('ping');
+	}, 2000);
+	socket.on('pong', function() {
+		latency = new Date.getTime() - startTime;
+		console.log(latency);
+	});
+
+	socket.playerEntity = new entityTypes.Player(300, 300, 5, 16, socket.id);
 	socket.currentArea = null;
 	socket.lastAckNum = 0;
 	playerEntities.push(socket.playerEntity);
@@ -72,23 +84,12 @@ if (port == null || port == "") {
 }
 
 function update() {
-	wallChunks = lMap.updateChunks(wallEntities)
-	playerChunks = lMap.updateChunks(playerEntities)
+	wallChunks = lMap.updateChunks(wallEntities);
+	playerChunks = lMap.updateChunks(playerEntities);
+	enemyChunks = lMap.updateChunks(enemyEntities);
 }
 
-let x = 0;
-let v = 2;
 server.listen(port, () => {
 	console.log(`[SERVER] now listening to port ${port}`);
 	setInterval(update, 1000/15);
-	setInterval(() => {
-		spawnBullet(new bulletPattern.radialShotgun(555, 555, 2, 16, 5, 3, 6, x));
-		x += v;
-		if (Math.abs(x) > 120) {
-			v *= -1
-		}
-	}, 1000/10)
-	setInterval(() => {
-		spawnBullet(new bulletPattern.radialShotgun(555, 555, 3, 16, 7, 3, 18, x));
-	}, 1000/2)
 });
