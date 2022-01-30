@@ -82,13 +82,13 @@ server.listen(port, () => {
 	console.log(`[SERVER] now listening to port ${port}`);
 	setInterval(update, 1000/15);
 	setInterval(() => {
-		spawnBullet(new bulletPattern.radialShotgun(555, 555, 1.5, 16, 5, 3, 6, x));
+		spawnBullet(new bulletPattern.radialShotgun(555, 555, 2, 16, 5, 3, 6, x));
 		x += v;
 		if (Math.abs(x) > 120) {
 			v *= -1
 		}
 	}, 1000/10)
 	setInterval(() => {
-		spawnBullet(new bulletPattern.radialShotgun(555, 555, 1.5, 16, 7, 3, 18, x));
-	}, 1000)
+		spawnBullet(new bulletPattern.radialShotgun(555, 555, 3, 16, 7, 3, 18, x));
+	}, 1000/2)
 });

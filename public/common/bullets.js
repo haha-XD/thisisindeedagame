@@ -26,9 +26,8 @@ export function updateBullet(entity) {
     if (elapsedTime/1000 > entity.lifetime) {
         return false;
     }
-    advanceEntity(entity, entity.direction, entity.speed);
-    //entity.x = entity.oX + elapsedTime/10*entity.speed*Math.cos(radians(entity.direction));
-    //entity.y = entity.oY + elapsedTime/10*entity.speed*Math.sin(radians(entity.direction));
+    entity.x = entity.oX + elapsedTime/10*entity.speed*Math.cos(radians(entity.direction));
+    entity.y = entity.oY + elapsedTime/10*entity.speed*Math.sin(radians(entity.direction));
     return true;
 }
 
