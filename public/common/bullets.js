@@ -1,8 +1,8 @@
 import { Bullet } from "./entityTypes.js";
 import { radians } from "./helper.js";
+import { advanceEntity } from "./entityOperations.js"
 
 let id = 0;
-
 export let BasePattern = function(x, y, spd, size, lifetime, damage) {
     this.creationTS = new Date().getTime()
     this.x = x;
@@ -26,8 +26,9 @@ export function updateBullet(entity) {
     if (elapsedTime/1000 > entity.lifetime) {
         return false;
     }
-    entity.x = entity.oX + elapsedTime/10*entity.speed*Math.cos(radians(entity.direction));
-    entity.y = entity.oY + elapsedTime/10*entity.speed*Math.sin(radians(entity.direction));
+    advanceEntity(entity, entity.direction, entity.speed);
+    //entity.x = entity.oX + elapsedTime/10*entity.speed*Math.cos(radians(entity.direction));
+    //entity.y = entity.oY + elapsedTime/10*entity.speed*Math.sin(radians(entity.direction));
     return true;
 }
 
@@ -40,7 +41,6 @@ export function parsePattern(pattern, entities) {
                                     pattern.startAngle + i * (360/pattern.shotCount),
                                     pattern.lifetime,
                                     pattern.damage)
-            bullet.creationTS = pattern.creationTS+200;
             entities.push(bullet);
         }
     }

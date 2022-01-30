@@ -14,14 +14,13 @@ import { radians } from './public/common/helper.js'
 app.use(express.static('public'));
 
 let wallEntities = lMap.loadMap('nexus');
-let playerEntities = []
-let svBulletEntities = [];
+let playerEntities = [];
 
-let chunks = lMap.updateChunks(wallEntities); //because only walls exist when starting
+let wallChunks = lMap.updateChunks(wallEntities);
+let playerChunks = lMap.updateChunks(playerEntities);
 
 function spawnBullet(bullet) {
 	io.emit('bullet', bullet);
-	bulletPattern.parsePattern(bullet, svBulletEntities);
 }
 
 io.on('connection', (socket) => {
@@ -45,13 +44,24 @@ io.on('connection', (socket) => {
 		console.log('sending bullet')
 	})
 
+	socket.on('dmg taken', (bullet) => {
+		if (socket.playerEntity.hp > 0) {
+			socket.playerEntity.hp -= bullet.damage;
+		}
+	})
+
 	setInterval(() => {	
 		socket.emit('update', {num: socket.lastAckNum,
-     	    				   state: lMap.getVisibleChunks(
-										entityOps.entityChunkLoc(socket.playerEntity),
-										chunks
-							   )
-
+     	    				   state: {
+							       players: lMap.getVisibleChunks(
+								       entityOps.entityChunkLoc(socket.playerEntity),
+								       playerChunks
+								   ), 
+								   walls: lMap.getVisibleChunks(
+									   entityOps.entityChunkLoc(socket.playerEntity),
+									   wallChunks
+								   )
+							   } 
 		});
 	}, 1000/15)
 })
@@ -62,27 +72,8 @@ if (port == null || port == "") {
 }
 
 function update() {
-	let tempArray = []
-	for (let entity of svBulletEntities) {
-		if (!(bulletPattern.updateBullet(entity))) {
-			tempArray.push(entity)
-		}	
-		for(let player of playerEntities) {
-			if (entityOps.detectEntityCollision(entity, player)) {
-				if (player.hp > 0) {
-					player.hp -= entity.damage
-				}
-			}
-		}
-		for(let wall of wallEntities) {
-			if(entityOps.detectEntityCollision(entity, wall)) {
-				tempArray.push(entity)
-			}
-		}
-	}
-	svBulletEntities = svBulletEntities.filter(element => !tempArray.includes(element))
-
-	chunks = lMap.updateChunks(wallEntities.concat(playerEntities));
+	wallChunks = lMap.updateChunks(wallEntities)
+	playerChunks = lMap.updateChunks(playerEntities)
 }
 
 let x = 0;
@@ -91,13 +82,13 @@ server.listen(port, () => {
 	console.log(`[SERVER] now listening to port ${port}`);
 	setInterval(update, 1000/15);
 	setInterval(() => {
-		spawnBullet(new bulletPattern.radialShotgun(555, 555, 3, 16, 5, 3, 6, x));
+		spawnBullet(new bulletPattern.radialShotgun(555, 555, 1.5, 16, 5, 3, 6, x));
 		x += v;
 		if (Math.abs(x) > 120) {
 			v *= -1
 		}
 	}, 1000/10)
 	setInterval(() => {
-		spawnBullet(new bulletPattern.radialShotgun(555, 555, 3, 16, 5, 3, 18, x));
+		spawnBullet(new bulletPattern.radialShotgun(555, 555, 1.5, 16, 7, 3, 18, x));
 	}, 1000)
 });

@@ -4,6 +4,7 @@ import { rotate, radians } from './common/helper.js';
 
 let Game = function(canvas, UIcanvas, socket) {
     this.localEntities = []
+    this.playerEntities = []
     this.localBulletEntities = []
     this.wallEntities = []
     this.playerEntity = null;
@@ -72,7 +73,13 @@ Game.prototype.updateEntities = function() {
 		if (!(updateBullet(entity))) {
 			tempArray.push(entity)
 		}
-		for(let wall of this.wallEntities) {
+        if (entityOps.detectEntityCollision(entity, this.playerEntity)) {
+            if (this.playerEntity.hp > 0) {
+                this.playerEntity.hp -= entity.damage
+                this.socket.emit('dmg taken', entity)
+            }
+        }
+		for (let wall of this.wallEntities) {
 			if(entityOps.detectEntityCollision(entity, wall)) {
 				tempArray.push(entity)
 			}
@@ -80,24 +87,24 @@ Game.prototype.updateEntities = function() {
     }
 	this.localBulletEntities = this.localBulletEntities.filter(element => !tempArray.includes(element))
 }
- 7
+ 
 Game.prototype.processServerMessages = function() {
     while (true) {
         let message = this.networkQueue.shift()
         if (!message) {
             break;
         }
-        this.localEntities = message['state'];
+        this.playerEntities = message['state']['players'];
+        this.wallEntities = message['state']['walls'];
+        this.localEntities = this.playerEntities.concat(this.wallEntities);
         this.lastAckNum = message['num'];
-        //categorizing
-        for(let entity of this.localEntities) {
+    
+        for(let entity of this.playerEntities) {
             if (entity.socketId == this.clientId) {
                 this.playerEntity = entity;
             }
         }
-        this.wallEntities = this.localEntities.filter(entity => entity.entityId == 'wall')
-        //
-
+    
         this.performServerReconciliation();
     }        
 }
