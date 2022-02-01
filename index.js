@@ -89,7 +89,13 @@ function update() {
 	enemyChunks = lMap.updateChunks(enemyEntities);
 }
 
+let i = 0;
+let v = 3;
 server.listen(port, () => {
 	console.log(`[SERVER] now listening to port ${port}`);
 	setInterval(update, 1000/15);
+	setInterval(() => {
+		i+=v;
+		spawnBullet(new bulletPattern.radialShotgun(550, 550, 3, 16, 5, 5, 10, i))
+	}, 1000/10);
 });
