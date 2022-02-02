@@ -26,14 +26,17 @@ export let Bullet = function(x, y, spd, size, dir, lifetime, damage) {
 	this.damage = damage;
 }
 
+export let Enemy = function(x, y, spd, size, dataAI) {
+	BaseEntity.call(this, x, y, spd, size);
+
+	this.entityId = 'enemy';
+	this.timer = 0;
+	this.ai = dataAI; //name of file in /enemy_data
+	this.state;
+}
+
 export let Wall = function(x, y, size) {
 	BaseEntity.call(this, x, y, null, size);
 
 	this.entityId = 'wall'
-}
-
-export let BulletPattern = function(x, y, data) {
-	BaseEntity.call(this, x, y, null);
-	
-	this.entityId = 'bulletPattern'
 }

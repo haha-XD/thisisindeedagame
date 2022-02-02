@@ -1,8 +1,6 @@
 import { Bullet } from "./entityTypes.js";
 import { radians } from "./helper.js";
-import { advanceEntity } from "./entityOperations.js"
 
-let id = 0;
 export let BasePattern = function(x, y, spd, size, lifetime, damage) {
     this.creationTS = new Date().getTime()
     this.x = x;
@@ -13,7 +11,7 @@ export let BasePattern = function(x, y, spd, size, lifetime, damage) {
     this.damage = damage;
 }
 
-export let radialShotgun = function(x, y, spd, size, lifetime, damage, shotCount, startAngle,) {
+export let radialShotgun = function(x, y, spd, size, lifetime, damage, shotCount, startAngle) {
 	BasePattern.call(this, x, y, spd, size, lifetime, damage);
 
     this.shotCount = shotCount;
@@ -43,4 +41,8 @@ export function parsePattern(pattern, entities) {
             entities.push(bullet);
         }
     }
+}
+
+export let bulletDict = {
+    "radialShotgun" : radialShotgun
 }

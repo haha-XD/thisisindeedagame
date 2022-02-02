@@ -7,6 +7,7 @@ let Game = function(canvas, UIcanvas, socket) {
     this.playerEntities = []
     this.localBulletEntities = []
     this.wallEntities = []
+    this.enemyEntities = []
     this.playerEntity = null;
     //rendering
     this.canvas = canvas;
@@ -97,9 +98,11 @@ Game.prototype.processServerMessages = function() {
         }
         this.playerEntities = message['state']['players'];
         this.wallEntities = message['state']['walls'];
-        this.localEntities = this.playerEntities.concat(this.wallEntities);
+        this.enemyEntities = message['state']['enemies'];
         this.lastAckNum = message['num'];
     
+        this.localEntities = this.playerEntities.concat(this.wallEntities, this.enemyEntities);
+
         for(let entity of this.playerEntities) {
             if (entity.socketId == this.clientId) {
                 this.playerEntity = entity;
