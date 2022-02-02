@@ -1,7 +1,7 @@
 {
     "states" : {
         "chasing" : {
-            "behaviour" : ["chase", "shoot shotgun 7"]
+            "behaviour" : ["chase", "shoot shotgun 9"]
         },
         "wandering" : {
             "behaviour" : ["stateChangeInRange 200 chasing"]
