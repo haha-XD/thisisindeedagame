@@ -25,18 +25,7 @@ let enemyAI = enemies.loadEnemyAI('nexus');
 
 enemyEntities.push(new entityTypes.Enemy(550, 550, 4, 48, 'chaser'))
 
-let startTime = 0;
-
 io.on('connection', (socket) => {
-	setInterval(() => {
-		startTime = new Date().getTime();
-		socket.emit('ping');
-	}, 2000);
-	socket.on('pong', function() {
-		let latency = new Date().getTime() - startTime;
-		console.log(latency, 'ms');
-	});
-
 	socket.playerEntity = new entityTypes.Player(300, 300, 5, 32, socket.id);
 	socket.currentArea = null;
 	socket.lastAckNum = 0;
@@ -62,6 +51,10 @@ io.on('connection', (socket) => {
 			socket.playerEntity.hp -= bullet.damage;
 		}
 	})
+
+	socket.on('disconnect', function () {
+		playerEntities = playerEntities.filter(entity => entity != socket.playerEntity);
+	});
 
 	setInterval(() => {	
 		socket.emit('update', {num: socket.lastAckNum,

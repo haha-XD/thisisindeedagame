@@ -35,6 +35,7 @@ function parseCommand(playerEntities, entity, args, io, ai) {
             }
             break;
         case 'chase':
+            if (playerEntities.length==0) return;
             let min = Infinity
             let closestPlayer;
             for (let pEntity of playerEntities) {
