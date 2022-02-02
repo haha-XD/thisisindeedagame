@@ -1,0 +1,29 @@
+{
+    "states" : [
+        {
+            "name" : "chasing",
+            "behaviour" : ["chase", "shoot shotgun 1000"],
+            "range" : 5
+        },
+        {
+            "name" : "wandering",
+            "behaviour" : []
+        },
+        {
+            "name" : "stopShotgun",
+            "behaviour" : ["stop 3000", "shoot shotgun 1000"]
+        }
+    ],
+    "defaultState" : "wandering",
+    "projectiles" : [ 
+        {
+            "name" : "shotgun",
+            "type" : "radialShotgun",
+            "size" : 16,
+            "lifetime" : 5,
+            "damage" : 5,
+            "shotCount" : 10,
+            "startAngle" : 0
+        }
+    ]
+}
