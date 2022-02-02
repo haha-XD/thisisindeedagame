@@ -14,17 +14,13 @@ export function loadEnemyAI(mapName) {
 }
 
 export function updateEnemy(entity, ai, playerEntities, io) {
-    if (!entity.lastTimestamp) entity.lastTimestamp = new Date().getTime()
-    let elapsedTime = new Date().getTime()-entity.lastTimestamp
-
-    entity.timer += elapsedTime;
+    entity.counter += 1;
 
     if(!entity.state) entity.state = ai.defaultState
     for (let behaviour of ai.states[entity.state].behaviour) {
         const args = behaviour.split(' ');
         parseCommand(playerEntities, entity, args, io, ai)
     }
-    entity.lastTimestamp = new Date().getTime()
 }
 
 function parseCommand(playerEntities, entity, args, io, ai) {
@@ -53,7 +49,7 @@ function parseCommand(playerEntities, entity, args, io, ai) {
             advanceEntity(entity, angleToPlayer, entity.speed);
             break;
         case 'shoot':
-            if (entity.timer > args[2]) {
+            if (entity.counter % args[2] == 0) {
                 let bullet = ai.projectiles[args[1]];
                 io.emit('bullet', new bulletDict[bullet.type](entity.x, entity.y, 
                                                               bullet.speed, 
@@ -63,7 +59,6 @@ function parseCommand(playerEntities, entity, args, io, ai) {
                                                               bullet.shotCount, 
                                                               bullet.startAngle)
                 )    
-                entity.timer = 0
             }
             break;
     }

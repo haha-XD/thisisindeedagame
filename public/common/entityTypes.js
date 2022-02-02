@@ -30,7 +30,7 @@ export let Enemy = function(x, y, spd, size, dataAI) {
 	BaseEntity.call(this, x, y, spd, size);
 
 	this.entityId = 'enemy';
-	this.timer = 0;
+	this.counter = 0;
 	this.ai = dataAI; //name of file in /enemy_data
 	this.state;
 }

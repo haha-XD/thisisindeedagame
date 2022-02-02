@@ -100,5 +100,5 @@ function update() {
 
 server.listen(port, () => {
 	console.log(`[SERVER] now listening to port ${port}`);
-	setInterval(update, 1000/15);
+	setInterval(update, 1000/10);
 });

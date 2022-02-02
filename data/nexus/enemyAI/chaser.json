@@ -1,13 +1,13 @@
 {
     "states" : {
         "chasing" : {
-            "behaviour" : ["chase", "shoot shotgun 2000 t1"]
+            "behaviour" : ["chase", "shoot shotgun 7"]
         },
         "wandering" : {
             "behaviour" : ["stateChangeInRange 200 chasing"]
         },
         "stopShotgun" : {
-            "behaviour" : ["shoot shotgun 1000 t1"]
+            "behaviour" : ["shoot shotgun 10"]
         }
     },
     "defaultState" : "wandering",
