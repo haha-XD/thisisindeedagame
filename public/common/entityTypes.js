@@ -36,6 +36,7 @@ export let Enemy = function(x, y, spd, size, dataAI) {
 
 	this.entityId = 'enemy';
 	this.counter = 0;
+	this.spiralAngle = 0;
 	this.ai = dataAI; //name of file in /enemy_data
 	this.state;
 }

@@ -62,5 +62,20 @@ function parseCommand(playerEntities, entity, args, io, ai) {
                 )    
             }
             break;
+        case 'shootSpiral':
+            if (entity.counter % args[2] == 0) {
+                let bullet = ai.projectiles[args[1]];
+                io.emit('bullet', new bulletDict[bullet.type](entity.x, entity.y, 
+                                                              bullet.speed, 
+                                                              bullet.size, 
+                                                              bullet.lifetime, 
+                                                              bullet.damage, 
+                                                              bullet.shotCount, 
+                                                              entity.spiralAngle)
+                )    
+                entity.spiralAngle += parseInt(args[3])
+                console.log(entity.spiralAngle)
+            }
+            break;
     }
 }

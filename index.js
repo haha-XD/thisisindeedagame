@@ -8,7 +8,6 @@ const io = new Server(server);
 import * as entityTypes from './public/common/entityTypes.js';
 import * as entityOps from './public/common/entityOperations.js';
 import * as lMap from './server_modules/levelMap.js';
-import * as bulletPattern from './public/common/bullets.js'
 import * as enemies from './server_modules/enemies.js';
 import { SV_UPDATE_RATE } from './public/common/constants.js';
 
@@ -25,9 +24,6 @@ let enemyChunks = lMap.updateChunks(enemyEntities);
 let enemyAI = enemies.loadEnemyAI('nexus');
 
 enemyEntities.push(new entityTypes.Enemy(550, 550, 5, 48, 'chaser'))
-enemyEntities.push(new entityTypes.Enemy(550, 550, 4, 48, 'chaser'))
-enemyEntities.push(new entityTypes.Enemy(550, 550, 3, 48, 'chaser'))
-enemyEntities.push(new entityTypes.Enemy(550, 550, 6, 48, 'chaser'))
 
 io.on('connection', (socket) => {
 	socket.playerEntity = new entityTypes.Player(300, 300, 5, 32, socket.id);
