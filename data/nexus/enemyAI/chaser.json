@@ -5,9 +5,6 @@
         },
         "wandering" : {
             "behaviour" : ["stateChangeInRange 200 chasing"]
-        },
-        "stopShotgun" : {
-            "behaviour" : ["shoot shotgun 10"]
         }
     },
     "defaultState" : "wandering",

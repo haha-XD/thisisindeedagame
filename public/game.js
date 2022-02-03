@@ -1,14 +1,16 @@
 import { parsePattern, updateBullet } from './common/bullets.js';
+import { SV_UPDATE_RATE } from './common/constants.js';
 import * as entityOps from './common/entityOperations.js';
+import { Player } from './common/entityTypes.js';
 import { rotate, radians } from './common/helper.js';
 
 let Game = function(canvas, UIcanvas, socket) {
-    this.localEntities = []
-    this.playerEntities = []
+    this.localEntities = {}
+    this.playerEntities = {}
     this.localBulletEntities = []
-    this.wallEntities = []
-    this.enemyEntities = []
-    this.playerEntity = null;
+    this.wallEntities = {}
+    this.enemyEntities = {}
+    this.playerEntity;
     //rendering
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
@@ -32,7 +34,7 @@ let Game = function(canvas, UIcanvas, socket) {
     })
     //updates
 	this.updateRate = 100;
-    this.updateInterval = null;
+    this.updateInterval;
     //controller
     this.lastTs = 0;
     this.controller = {};
@@ -64,11 +66,38 @@ Game.prototype.update = function() {
     }
     this.processServerMessages();
 	this.processInputs(); 
+    this.interpolateEnemies();
     this.updateEntities();
     this.draw();
 
     let player = this.playerEntity;
     document.getElementById('positionStatus').textContent = `x: ${player.x | 0}, y: ${player.y | 0} lastAckNum: ${this.lastAckNum} screenRot: ${this.screenRot | 0} chunkLoc: ${entityOps.entityChunkLoc(player)} hp: ${player.hp}`;
+}
+
+Game.prototype.interpolateEnemies = function() {
+    let renderTS = new Date().getTime() - (1000/SV_UPDATE_RATE)
+
+    for (let entity of Object.values(this.localEntities)) {
+        if (entity.socketId == this.clientId) continue;
+        
+        let buffer = entity.positionBuffer;
+
+        while (buffer.length >= 2 && buffer[1][0] <= renderTS) {
+            buffer.shift()
+        }
+
+        if (buffer.length >=2 && buffer[0][0] <= renderTS && renderTS <= buffer[1][0]) {
+            var x0 = buffer[0][1][0];
+            var x1 = buffer[1][1][0];
+            var y0 = buffer[0][1][1];
+            var y1 = buffer[1][1][1];
+            var t0 = buffer[0][0];
+            var t1 = buffer[1][0];
+      
+            entity.x = x0 + (x1 - x0) * (renderTS - t0) / (t1 - t0);
+            entity.y = y0 + (y1 - y0) * (renderTS - t0) / (t1 - t0);
+        }
+    }
 }
 
 Game.prototype.updateEntities = function() {
@@ -81,7 +110,7 @@ Game.prototype.updateEntities = function() {
             this.socket.emit('dmg taken', entity)
     
         }
-		for (let wall of this.wallEntities) {
+		for (let wall of Object.values(this.wallEntities)) {
 			if(entityOps.detectEntityCollision(entity, wall)) {
 				tempArray.push(entity)
 			}
@@ -89,25 +118,48 @@ Game.prototype.updateEntities = function() {
     }
 	this.localBulletEntities = this.localBulletEntities.filter(element => !tempArray.includes(element))
 }
- 
+
+Game.prototype.parseSvEntities = function(entityArray, entityDict) {
+    for (let assignEntity of entityArray) {
+        if (!entityDict[assignEntity.id]) {
+            entityDict[assignEntity.id] = assignEntity;
+        }
+
+        let entity = entityDict[assignEntity.id]
+
+        if (assignEntity.socketId == this.clientId) {
+            this.playerEntity = entity
+            Object.assign(entity, assignEntity)
+        } else {
+            let tempX = assignEntity.x.valueOf()
+            let tempY = assignEntity.y.valueOf()
+            assignEntity.x = entity.x
+            assignEntity.y = entity.y
+            assignEntity.positionBuffer = entity.positionBuffer
+            Object.assign(entity, assignEntity)
+
+            if (!entity.stationary) {
+                entity.positionBuffer.push([new Date().getTime(), [tempX, tempY]])
+                console.log(entity.positionBuffer)
+            }
+        }
+    }
+}
+
 Game.prototype.processServerMessages = function() {
     while (true) {
         let message = this.networkQueue.shift()
         if (!message) {
             break;
         }
-        this.playerEntities = message['state']['players'];
-        this.wallEntities = message['state']['walls'];
-        this.enemyEntities = message['state']['enemies'];
+        
+        this.parseSvEntities(message['state']['players'], this.playerEntities)
+        this.parseSvEntities(message['state']['walls'], this.wallEntities)
+        this.parseSvEntities(message['state']['enemies'], this.enemyEntities)
+
         this.lastAckNum = message['num'];
     
-        this.localEntities = this.playerEntities.concat(this.wallEntities, this.enemyEntities);
-
-        for(let entity of this.playerEntities) {
-            if (entity.socketId == this.clientId) {
-                this.playerEntity = entity;
-            }
-        }
+        this.localEntities = {...this.playerEntities, ...this.wallEntities, ...this.enemyEntities};
     
         this.performServerReconciliation();
     }        
@@ -117,7 +169,7 @@ Game.prototype.performServerReconciliation = function() {
     this.pendingInputStates = this.pendingInputStates.filter(input => input.num > this.lastAckNum);
     if(this.pendingInputStates) {
         for (let input of this.pendingInputStates) {
-            entityOps.applyInput(input.rot, input.inputs, this.playerEntity, this.wallEntities);            
+            entityOps.applyInput(input.rot, input.inputs, this.playerEntity, Object.values(this.wallEntities));            
         }
     }
 
@@ -128,8 +180,7 @@ Game.prototype.draw = function() {
     this.UIctx.clearRect(0, 0, this.UIcanvas.width, this.UIcanvas.height);
     const centerX = this.canvas.width/2
     const centerY = this.canvas.height/2
-    for (let entity of this.localEntities.concat(this.localBulletEntities)) {
-
+    for (let entity of Object.values(this.localEntities).concat(this.localBulletEntities)) {
         let cEntityX = Math.trunc(entity.x - this.playerEntity.x);
         let cEntityY = Math.trunc(entity.y - this.playerEntity.y);
         let [x, y] = rotate(cEntityX, cEntityY, this.screenRot);
@@ -225,7 +276,7 @@ Game.prototype.processInputs = function() {
             let packagedInput = {rot: this.screenRot, num: this.cmdNum, inputs: tempInputs}
 
             this.socket.emit('inputs', packagedInput);    
-            entityOps.applyInput(this.screenRot, tempInputs, this.playerEntity, this.wallEntities);
+            entityOps.applyInput(this.screenRot, tempInputs, this.playerEntity, Object.values(this.wallEntities));
             this.pendingInputStates.push(packagedInput)
     
             this.cmdNum += 1;    

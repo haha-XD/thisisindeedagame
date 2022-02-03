@@ -10,6 +10,7 @@ import * as entityOps from './public/common/entityOperations.js';
 import * as lMap from './server_modules/levelMap.js';
 import * as bulletPattern from './public/common/bullets.js'
 import * as enemies from './server_modules/enemies.js';
+import { SV_UPDATE_RATE } from './public/common/constants.js';
 
 app.use(express.static('public'));
 
@@ -73,7 +74,7 @@ io.on('connection', (socket) => {
 								   )
 							   } 
 		});
-	}, 1000/15)
+	}, 1000/SV_UPDATE_RATE)
 })
 
 let port = process.env.PORT;
@@ -93,5 +94,5 @@ function update() {
 
 server.listen(port, () => {
 	console.log(`[SERVER] now listening to port ${port}`);
-	setInterval(update, 1000/10);
+	setInterval(update, 1000/SV_UPDATE_RATE);
 });

@@ -1,3 +1,5 @@
+let id = 0;
+
 export let BaseEntity = function(x, y, spd, size) {
 	this.creationTS = new Date().getTime(); 
 	this.x = x;
@@ -6,6 +8,9 @@ export let BaseEntity = function(x, y, spd, size) {
 	this.oY = y;
 	this.speed = spd;
 	this.size = size;
+	this.positionBuffer = [];
+	this.id = id
+	id++
 }
 
 export let Player = function(x, y, spd, size, socketId) {
@@ -39,4 +44,5 @@ export let Wall = function(x, y, size) {
 	BaseEntity.call(this, x, y, null, size);
 
 	this.entityId = 'wall'
+	this.stationary = true;
 }
