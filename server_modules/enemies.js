@@ -34,6 +34,15 @@ function parseCommand(playerEntities, entity, args, io, ai) {
                 }
             }
             break;
+        case 'stateChangeOutRange':
+            for (let pEntity of playerEntities) {
+                let dist = Math.sqrt((pEntity.x-entity.x)**2+(pEntity.y-entity.y)**2)
+                if (dist > args[1]) {
+                    entity.state = args[2];
+                    break;
+                }
+            }
+            break;
         case 'chase':
             if (playerEntities.length==0) return;
             let min = Infinity

@@ -1,10 +1,10 @@
 {
     "states" : {
         "chasing" : {
-            "behaviour" : ["chase", "shootSpiral shotgun 9 10"]
+            "behaviour" : ["chase", "shootSpiral shotgun 9 10", "stateChangeOutRange 400 wandering"]
         },
         "wandering" : {
-            "behaviour" : ["stateChangeInRange 200 chasing"]
+            "behaviour" : ["stateChangeInRange 400 chasing"]
         }
     },
     "defaultState" : "wandering",
