@@ -11,12 +11,21 @@ export let BasePattern = function(x, y, spd, size, lifetime, damage) {
     this.damage = damage;
 }
 
-export let radialShotgun = function(x, y, spd, size, lifetime, damage, shotCount, startAngle) {
-	BasePattern.call(this, x, y, spd, size, lifetime, damage);
+export let radialShotgun = function({x, y, speed, size, lifetime, damage, shotCount, direction}) {
+	BasePattern.call(this, x, y, speed, size, lifetime, damage);
 
     this.shotCount = shotCount;
-    this.startAngle = startAngle
+    this.direction = direction
     this.patternType = 'radial';
+}
+
+export let coneShotgun = function({x, y, speed, size, lifetime, damage, shotCount, direction, coneAngle}) {
+	BasePattern.call(this, x, y, speed, size, lifetime, damage);
+
+    this.shotCount = shotCount;
+    this.direction = direction
+    this.coneAngle = coneAngle
+    this.patternType = 'coneShotgun';
 }
 
 export function updateBullet(entity) {
@@ -30,19 +39,29 @@ export function updateBullet(entity) {
 }
 
 export function parsePattern(pattern, entities) {
-    if (pattern.patternType == 'radial') {
-        for(let i = 0; i < pattern.shotCount; i++) {
-            let bullet = new Bullet(pattern.x, pattern.y, 
-                                    pattern.speed, 
-                                    pattern.size, 
-                                    pattern.startAngle + i * (360/pattern.shotCount),
-                                    pattern.lifetime,
-                                    pattern.damage)
-            entities.push(bullet);
-        }
+    switch (pattern.patternType) {
+        case 'radial':
+            console.log(pattern.shotCount)
+            for(let i = 0; i < pattern.shotCount; i++) {
+                let bullet = new Bullet(pattern.x, pattern.y, 
+                                        pattern.speed, 
+                                        pattern.size, 
+                                        pattern.direction + i * (360/pattern.shotCount),
+                                        pattern.lifetime,
+                                        pattern.damage)
+                entities.push(bullet);
+            }
+            break;
+        case 'coneShotgun':
+            for(let i = 0; i < pattern.shotCount; i++) {
+                let bullet = new Bullet(pattern.x, pattern.y, 
+                                        pattern.speed, 
+                                        pattern.size, 
+                                        pattern.direction - pattern.coneAngle/2 + i * (pattern.coneAngle/pattern.shotCount),
+                                        pattern.lifetime,
+                                        pattern.damage)
+                entities.push(bullet);
+            }
+            break;
     }
-}
-
-export let bulletDict = {
-    "radialShotgun" : radialShotgun
 }

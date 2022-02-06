@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { bulletDict } from '../public/common/bullets.js';
+import * as bulletPatterns from '../public/common/bullets.js';
 
 import { advanceEntity } from '../public/common/entityOperations.js';
 
@@ -23,37 +23,34 @@ export function updateEnemy(entity, ai, playerEntities, io) {
     }
 }
 
+function getClosestPlayer(entity, playerEntities) {
+    let min = Infinity
+    let closestPlayer;
+    for (let pEntity of playerEntities) {
+        let dist = Math.sqrt((pEntity.x-entity.x)**2+(pEntity.y-entity.y)**2)
+        if (dist < min) {
+            min = dist;
+            closestPlayer = pEntity;
+        }
+    }                
+    return [min, closestPlayer];
+}
+
 function parseCommand(playerEntities, entity, args, io, ai) {
+    if (playerEntities.length==0) return;
+    let [min, closestPlayer] = getClosestPlayer(entity, playerEntities)
     switch (args[0]) {
         case 'stateChangeInRange':
-            for (let pEntity of playerEntities) {
-                let dist = Math.sqrt((pEntity.x-entity.x)**2+(pEntity.y-entity.y)**2)
-                if (dist < args[1]) {
-                    entity.state = args[2];
-                    break;
-                }
+            if (min < args[1]) {
+                entity.state = args[2];
             }
             break;
         case 'stateChangeOutRange':
-            for (let pEntity of playerEntities) {
-                let dist = Math.sqrt((pEntity.x-entity.x)**2+(pEntity.y-entity.y)**2)
-                if (dist > args[1]) {
-                    entity.state = args[2];
-                    break;
-                }
+            if (min > args[1]) {
+                entity.state = args[2];
             }
             break;
         case 'chase':
-            if (playerEntities.length==0) return;
-            let min = Infinity
-            let closestPlayer;
-            for (let pEntity of playerEntities) {
-                let dist = Math.sqrt((pEntity.x-entity.x)**2+(pEntity.y-entity.y)**2)
-                if (dist < min) {
-                    min = dist;
-                    closestPlayer = pEntity;
-                }
-            }
             let angleToPlayer = Math.atan2(closestPlayer.y-entity.y, 
                                            closestPlayer.x-entity.x) * 180/Math.PI;
             advanceEntity(entity, angleToPlayer, entity.speed);
@@ -61,29 +58,30 @@ function parseCommand(playerEntities, entity, args, io, ai) {
         case 'shoot':
             if (entity.counter % args[2] == 0) {
                 let bullet = ai.projectiles[args[1]];
-                io.emit('bullet', new bulletDict[bullet.type](entity.x, entity.y, 
-                                                              bullet.speed, 
-                                                              bullet.size, 
-                                                              bullet.lifetime, 
-                                                              bullet.damage, 
-                                                              bullet.shotCount, 
-                                                              bullet.startAngle)
-                )    
+                bullet.x = entity.x
+                bullet.y = entity.y
+                io.emit('bullet', new bulletPatterns[bullet.type](bullet))    
+            }
+            break;
+        case 'shootAimed':
+            if (entity.counter % args[2] == 0) {
+                let angleToPlayer = Math.atan2(closestPlayer.y-entity.y, 
+                                               closestPlayer.x-entity.x) * 180/Math.PI;
+                let bullet = ai.projectiles[args[1]];
+                bullet.x = entity.x
+                bullet.y = entity.y
+                bullet.direction = angleToPlayer;
+                io.emit('bullet', new bulletPatterns[bullet.type](bullet))    
             }
             break;
         case 'shootSpiral':
             if (entity.counter % args[2] == 0) {
                 let bullet = ai.projectiles[args[1]];
-                io.emit('bullet', new bulletDict[bullet.type](entity.x, entity.y, 
-                                                              bullet.speed, 
-                                                              bullet.size, 
-                                                              bullet.lifetime, 
-                                                              bullet.damage, 
-                                                              bullet.shotCount, 
-                                                              entity.spiralAngle)
-                )    
+                bullet.x = entity.x
+                bullet.y = entity.y
+                bullet.direction = entity.spiralAngle;
+                io.emit('bullet', new bulletPatterns[bullet.type](bullet))    
                 entity.spiralAngle += parseInt(args[3])
-                console.log(entity.spiralAngle)
             }
             break;
     }

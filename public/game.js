@@ -140,7 +140,6 @@ Game.prototype.parseSvEntities = function(entityArray, entityDict) {
 
             if (!entity.stationary) {
                 entity.positionBuffer.push([new Date().getTime(), [tempX, tempY]])
-                console.log(entity.positionBuffer)
             }
         }
     }
