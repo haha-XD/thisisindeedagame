@@ -1,7 +1,6 @@
 import { parsePattern, updateBullet } from './common/bullets.js';
 import { SV_UPDATE_RATE } from './common/constants.js';
 import * as entityOps from './common/entityOperations.js';
-import { Player } from './common/entityTypes.js';
 import { rotate, radians } from './common/helper.js';
 
 let Game = function(canvas, UIcanvas, socket) {
@@ -38,6 +37,8 @@ let Game = function(canvas, UIcanvas, socket) {
     //controller
     this.lastTs = 0;
     this.controller = {};
+    this.mouseHolding = false;
+    this.mousePos = []
     //server reconciliation
     this.lastBulletAckNum = 0;
     this.lastAckNum = 0;
@@ -87,12 +88,12 @@ Game.prototype.interpolateEnemies = function() {
         }
 
         if (buffer.length >=2 && buffer[0][0] <= renderTS && renderTS <= buffer[1][0]) {
-            var x0 = buffer[0][1][0];
-            var x1 = buffer[1][1][0];
-            var y0 = buffer[0][1][1];
-            var y1 = buffer[1][1][1];
-            var t0 = buffer[0][0];
-            var t1 = buffer[1][0];
+            let x0 = buffer[0][1][0];
+            let x1 = buffer[1][1][0];
+            let y0 = buffer[0][1][1];
+            let y1 = buffer[1][1][1];
+            let t0 = buffer[0][0];
+            let t1 = buffer[1][0];
       
             entity.x = x0 + (x1 - x0) * (renderTS - t0) / (t1 - t0);
             entity.y = y0 + (y1 - y0) * (renderTS - t0) / (t1 - t0);
@@ -296,18 +297,48 @@ Game.prototype.clApplyInputs = function(inputs) {
 }
 
 Game.prototype.attachEventHandlers = function() {
-	(function(self) {			
-		window.addEventListener('keydown', function (e) {
+	(function(self) {
+        function getCursorPosition(canvas, event) {
+            const rect = canvas.getBoundingClientRect()
+            const x = event.clientX - rect.left
+            const y = event.clientY - rect.top
+            console.log("x: " + x + " y: " + y)
+        }			
+        function mouseInterval() {
+            let setIntervalId = setInterval(function() {
+              if (!self.mouseHolding) clearInterval(setIntervalId);
+              getCursorPosition(self.canvas, self.mousePos);
+            }, 100); //set your wait time between consoles in milliseconds here
+        }
+          
+		window.addEventListener('keydown', (e) => {
             if([87, 83, 68, 65, 81, 69, 84].includes(e.keyCode)) {
 			    self.controller[e.keyCode] = true;
             }
 		})
-		window.addEventListener('keyup', function (e) {
+		window.addEventListener('keyup', (e) => {
             if([87, 83, 68, 65, 81, 69, 84].includes(e.keyCode)) {
 			    self.controller[e.keyCode] = false;
             }
 		})
+        window.addEventListener('mousedown', () => {
+            self.mouseHolding = true;
+            mouseInterval();
+        })
+        window.addEventListener('mouseup', () => {
+            self.mouseHolding = false;
+            mouseInterval();
+        })
+        window.addEventListener('mouseleave', () => {
+            self.mouseHolding = false;
+            mouseInterval();
+        })
+        self.canvas.addEventListener('mousemove', (e) => {
+            self.mousePos = e;
+        })
 	})(this);
 }
+
+
 
 export { Game };
