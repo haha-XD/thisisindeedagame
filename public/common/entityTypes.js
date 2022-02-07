@@ -35,6 +35,8 @@ export let Enemy = function(x, y, spd, size, dataAI) {
 	BaseEntity.call(this, x, y, spd, size);
 
 	this.entityId = 'enemy';
+	this.hp = 1000;
+	this.maxhp = this.hp;
 	this.counter = 0;
 	this.spiralAngle = 0;
 	this.ai = dataAI; //name of file in /enemy_data

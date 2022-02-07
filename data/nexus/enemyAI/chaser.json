@@ -22,7 +22,7 @@
         },
         "coneShotgun" : {
             "type" : "coneShotgun",
-            "speed" : 3,
+            "speed" : 7,
             "size" : 32,
             "lifetime" : 5,
             "damage" : 5,

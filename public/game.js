@@ -188,10 +188,23 @@ Game.prototype.draw = function() {
         x += centerX;
         y += centerY;
 
-        if(entity.entityId == 'wall') { 
+        if (entity.entityId == 'wall') { 
             this.blitRotated(entity, x, y);
         } else {
             this.blit(entity, x, y);
+        }
+        
+        if (entity.hp) {
+            this.ctx.beginPath();
+            this.ctx.fillStyle = "grey";
+            this.ctx.fillRect(x-entity.size/2 * 1.5, 
+                              y+entity.size/2+5, 
+                              entity.size * 1.5, 5)
+            this.ctx.beginPath();
+            this.ctx.fillStyle = "red";
+            this.ctx.fillRect(x-entity.size/2 * 1.5, 
+                              y+entity.size/2+5, 
+                              entity.size * 1.5 * (entity.hp/entity.maxhp), 5)
         }
     }
 
@@ -225,18 +238,6 @@ Game.prototype.draw = function() {
                         this.UIcanvas.width/2.5, 
                         this.UIcanvas.height/2.36);
 
-
-    //fog of war
-    let maskCanvas = document.createElement('canvas');
-    maskCanvas.width = this.canvas.width;
-    maskCanvas.height = this.canvas.height;
-    let maskCtx = maskCanvas.getContext('2d');
-    maskCtx.fillStyle = 'black'
-    maskCtx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
-    maskCtx.globalCompositeOperation = 'xor';
-    maskCtx.arc(centerX, centerY, 400, 0, 2 * Math.PI);
-    maskCtx.fill();
-    this.ctx.drawImage(maskCanvas, 0, 0);
 }    
 
 Game.prototype.blitRotated = function(entity, x, y) {
@@ -301,8 +302,8 @@ Game.prototype.attachEventHandlers = function() {
 	(function(self) {
         function getCursorPosition(canvas, event) {
             const rect = canvas.getBoundingClientRect()
-            this.mousePos[0] = event.clientX - rect.left
-            this.mousePos[1] = event.clientY - rect.top
+            self.mousePos[0] = event.clientX - rect.left
+            self.mousePos[1] = event.clientY - rect.top
         }			
         function mouseInterval() {
             let setIntervalId = setInterval(function() {
