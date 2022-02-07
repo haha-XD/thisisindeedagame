@@ -38,7 +38,8 @@ let Game = function(canvas, UIcanvas, socket) {
     this.lastTs = 0;
     this.controller = {};
     this.mouseHolding = false;
-    this.mousePos = []
+    this.mousePosObj = []
+    this.mousePos = [0,0]
     //server reconciliation
     this.lastBulletAckNum = 0;
     this.lastAckNum = 0;
@@ -300,14 +301,13 @@ Game.prototype.attachEventHandlers = function() {
 	(function(self) {
         function getCursorPosition(canvas, event) {
             const rect = canvas.getBoundingClientRect()
-            const x = event.clientX - rect.left
-            const y = event.clientY - rect.top
-            console.log("x: " + x + " y: " + y)
+            this.mousePos[0] = event.clientX - rect.left
+            this.mousePos[1] = event.clientY - rect.top
         }			
         function mouseInterval() {
             let setIntervalId = setInterval(function() {
               if (!self.mouseHolding) clearInterval(setIntervalId);
-              getCursorPosition(self.canvas, self.mousePos);
+              getCursorPosition(self.canvas, self.mousePosObj);
             }, 100); //set your wait time between consoles in milliseconds here
         }
           
@@ -334,7 +334,7 @@ Game.prototype.attachEventHandlers = function() {
             mouseInterval();
         })
         self.canvas.addEventListener('mousemove', (e) => {
-            self.mousePos = e;
+            self.mousePosObj = e;
         })
 	})(this);
 }

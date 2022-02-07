@@ -24,6 +24,10 @@ let enemyChunks = lMap.updateChunks(enemyEntities);
 let enemyAI = enemies.loadEnemyAI('nexus');
 
 enemyEntities.push(new entityTypes.Enemy(550, 550, 5, 48, 'chaser'))
+enemyEntities.push(new entityTypes.Enemy(550, 550, 4, 48, 'chaser'))
+enemyEntities.push(new entityTypes.Enemy(550, 550, 4.5, 48, 'chaser'))
+enemyEntities.push(new entityTypes.Enemy(550, 550, 3.5, 48, 'chaser'))
+enemyEntities.push(new entityTypes.Enemy(550, 550, 5.5, 48, 'chaser'))
 
 io.on('connection', (socket) => {
 	socket.playerEntity = new entityTypes.Player(300, 300, 5, 32, socket.id);
