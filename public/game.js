@@ -306,7 +306,7 @@ Game.prototype.processInputs = function() {
             direction : angleToMouse - this.screenRot,
             coneAngle : 0
         }
-        parsePattern(data, this.localBulletEntities);
+        parsePattern(new coneShotgun(data), this.localBulletEntities);
         this.socket.emit('shoot', data);
     }
 }
