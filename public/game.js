@@ -1,4 +1,4 @@
-import { parsePattern, updateBullet } from './common/bullets.js';
+import { coneShotgun, parsePattern, updateBullet } from './common/bullets.js';
 import { SV_UPDATE_RATE } from './common/constants.js';
 import * as entityOps from './common/entityOperations.js';
 import { rotate, radians } from './common/helper.js';
@@ -283,6 +283,23 @@ Game.prototype.processInputs = function() {
     
             this.cmdNum += 1;    
         }
+    }
+
+    if (this.mouseHolding) {
+        let angleToMouse = Math.atan2(this.mousePos[1]-this.canvas.height/2, 
+                                      this.mousePos[0]-this.canvas.width/2) * 180/Math.PI;
+        let data = {
+            x : this.playerEntity.x,
+            y : this.playerEntity.y,
+            speed : 5,
+            size : 16,
+            lifetime : 5,
+            damage : 5,
+            shotCount : 1,
+            direction : angleToMouse - this.screenRot,
+            coneAngle : 0
+        }
+        parsePattern(new coneShotgun(data), this.localBulletEntities)
     }
 }
 
