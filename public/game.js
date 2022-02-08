@@ -31,6 +31,13 @@ let Game = function(canvas, UIcanvas, socket) {
     this.socket.on('ping', () => {
         this.socket.emit('pong');
     })
+    this.socket.on('allyShoot', (data) => {
+        console.log(this.playerEntities, data.playerId)
+        let projOwner = this.playerEntities[data.playerId];
+        data.x = projOwner.x;
+        data.y = projOwner.y;
+        parsePattern(data, this.localBulletEntities);
+    })
     //updates
 	this.updateRate = 100;
     this.updateInterval;
@@ -289,8 +296,6 @@ Game.prototype.processInputs = function() {
         let angleToMouse = Math.atan2(this.mousePos[1]-this.canvas.height/2, 
                                       this.mousePos[0]-this.canvas.width/2) * 180/Math.PI;
         let data = {
-            x : this.playerEntity.x,
-            y : this.playerEntity.y,
             speed : 15,
             size : 16,
             lifetime : 5,
@@ -299,7 +304,7 @@ Game.prototype.processInputs = function() {
             direction : angleToMouse - this.screenRot,
             coneAngle : 0
         }
-        this.socket.emit('test', data)
+        this.socket.emit('shoot', data);
     }
 }
 

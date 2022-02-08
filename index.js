@@ -53,13 +53,15 @@ io.on('connection', (socket) => {
 		}
 	})
 
-	socket.on('test', (data) => {
-		io.emit('bullet', new coneShotgun(data))
-	})
-	
-	socket.on('disconnect', function () {
+	socket.on('disconnect', () => {
 		playerEntities = playerEntities.filter(entity => entity != socket.playerEntity);
 	});
+
+	socket.on('shoot', (data) => {
+		let bullet = new coneShotgun(data)
+		bullet.playerId = socket.playerEntity.id;
+		io.emit('allyShoot', bullet);
+	})
 
 	setInterval(() => {	
 		socket.emit('update', {num: socket.lastAckNum,
