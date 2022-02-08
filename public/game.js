@@ -31,6 +31,7 @@ let Game = function(canvas, UIcanvas, socket) {
     this.socket.on('ping', () => {
         this.socket.emit('pong');
     })
+    this.lastShotTS = 0
     this.socket.on('allyShoot', (data) => {
         if (data.playerId == this.playerEntity.id) return;
         let projOwner = this.playerEntities[data.playerId];
@@ -306,7 +307,13 @@ Game.prototype.processInputs = function() {
             direction : angleToMouse - this.screenRot,
             coneAngle : 0
         }
-        parsePattern(new coneShotgun(data), this.localBulletEntities);
+        
+        let elapsedTime = new Date().getTime() - this.lastShotTS;
+        console.log(elapsedTime)
+        if (elapsedTime > this.playerEntity.fireRate) {    
+            parsePattern(new coneShotgun(data), this.localBulletEntities);
+            this.lastShotTS = new Date().getTime();
+        }
         this.socket.emit('shoot', data);
     }
 }
@@ -334,7 +341,7 @@ Game.prototype.attachEventHandlers = function() {
             let setIntervalId = setInterval(function() {
               if (!self.mouseHolding) clearInterval(setIntervalId);
               getCursorPosition(self.canvas, self.mousePosObj);
-            }, 100); //set your wait time between consoles in milliseconds here
+            }, 50); //set your wait time between consoles in milliseconds here
         }
           
 		window.addEventListener('keydown', (e) => {

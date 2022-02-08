@@ -30,6 +30,7 @@ io.on('connection', (socket) => {
 	socket.playerEntity = new entityTypes.Player(300, 300, 5, 32, socket.id);
 	socket.currentArea = null;
 	socket.lastAckNum = 0;
+	socket.lastShotTS = 0;
 	playerEntities.push(socket.playerEntity);
 
 	console.log('[SERVER] a user has connected');	
@@ -58,9 +59,13 @@ io.on('connection', (socket) => {
 	});
 
 	socket.on('shoot', (data) => {
-		let bullet = new coneShotgun(data)
-		bullet.playerId = socket.playerEntity.id;
-		io.emit('allyShoot', bullet);
+		let elapsedTime = new Date().getTime()-socket.lastShotTS
+		if (elapsedTime > socket.playerEntity.fireRate) {
+			let bullet = new coneShotgun(data)
+			bullet.playerId = socket.playerEntity.id;
+			io.emit('allyShoot', bullet);
+			socket.lastShotTS = new Date().getTime()	
+		}
 	})
 
 	setInterval(() => {	

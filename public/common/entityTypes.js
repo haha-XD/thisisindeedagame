@@ -19,6 +19,7 @@ export let Player = function(x, y, spd, size, socketId) {
 	this.entityId = 'player'
 	this.hp = 1000;
 	this.maxhp = this.hp;
+	this.fireRate = 100;
 	this.socketId = socketId;
 }
 
