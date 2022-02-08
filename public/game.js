@@ -32,7 +32,7 @@ let Game = function(canvas, UIcanvas, socket) {
         this.socket.emit('pong');
     })
     this.socket.on('allyShoot', (data) => {
-        console.log(this.playerEntities, data.playerId)
+        if (data.playerId == this.playerEntity.id) return;
         let projOwner = this.playerEntities[data.playerId];
         data.x = projOwner.x;
         data.y = projOwner.y;
@@ -296,6 +296,8 @@ Game.prototype.processInputs = function() {
         let angleToMouse = Math.atan2(this.mousePos[1]-this.canvas.height/2, 
                                       this.mousePos[0]-this.canvas.width/2) * 180/Math.PI;
         let data = {
+            x: this.playerEntity.x,
+            y: this.playerEntity.y,
             speed : 15,
             size : 16,
             lifetime : 5,
@@ -304,6 +306,7 @@ Game.prototype.processInputs = function() {
             direction : angleToMouse - this.screenRot,
             coneAngle : 0
         }
+        parsePattern(data, this.localBulletEntities);
         this.socket.emit('shoot', data);
     }
 }

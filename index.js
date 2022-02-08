@@ -58,7 +58,6 @@ io.on('connection', (socket) => {
 	});
 
 	socket.on('shoot', (data) => {
-		if (bullet.playerId == this.playerEntity.id) return;
 		let bullet = new coneShotgun(data)
 		bullet.playerId = socket.playerEntity.id;
 		io.emit('allyShoot', bullet);
