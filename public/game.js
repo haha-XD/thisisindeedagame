@@ -291,7 +291,7 @@ Game.prototype.processInputs = function() {
         let data = {
             x : this.playerEntity.x,
             y : this.playerEntity.y,
-            speed : 5,
+            speed : 15,
             size : 16,
             lifetime : 5,
             damage : 5,
@@ -299,7 +299,7 @@ Game.prototype.processInputs = function() {
             direction : angleToMouse - this.screenRot,
             coneAngle : 0
         }
-        parsePattern(new coneShotgun(data), this.localBulletEntities)
+        this.socket.emit('test', data)
     }
 }
 

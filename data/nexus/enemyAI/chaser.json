@@ -1,9 +1,9 @@
 {
     "states" : {
         "chasing" : {
-            "behaviour" : ["chase", 
-                           "shootAimed coneShotgun 1",
-                           "stateChangeOutRange 400 wandering"]
+            "behaviour" : ["shootAimed coneShotgun 5",
+                           "shootAimed radial 10",
+                           "chase"]
         },
         "wandering" : {
             "behaviour" : ["stateChangeInRange 400 chasing"]
@@ -13,7 +13,7 @@
     "projectiles" : {
         "radial" : {
             "type" : "radialShotgun",
-            "speed" : 4, 
+            "speed" : 3, 
             "size" : 16,
             "lifetime" : 5,
             "damage" : 5,
@@ -22,12 +22,12 @@
         },
         "coneShotgun" : {
             "type" : "coneShotgun",
-            "speed" : 7,
-            "size" : 32,
+            "speed" : 5,
+            "size" : 16,
             "lifetime" : 5,
             "damage" : 5,
-            "shotCount" : 1,
-            "coneAngle" : 0
+            "shotCount" : 6,
+            "coneAngle" : 60
         }
     }
 }

@@ -10,6 +10,7 @@ import * as entityOps from './public/common/entityOperations.js';
 import * as lMap from './server_modules/levelMap.js';
 import * as enemies from './server_modules/enemies.js';
 import { SV_UPDATE_RATE } from './public/common/constants.js';
+import { coneShotgun } from './public/common/bullets.js';
 
 app.use(express.static('public'));
 
@@ -52,6 +53,10 @@ io.on('connection', (socket) => {
 		}
 	})
 
+	socket.on('test', (data) => {
+		io.emit('bullet', new coneShotgun(data))
+	})
+	
 	socket.on('disconnect', function () {
 		playerEntities = playerEntities.filter(entity => entity != socket.playerEntity);
 	});
