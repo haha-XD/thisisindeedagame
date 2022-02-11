@@ -29,6 +29,7 @@ export let Bullet = function(x, y, spd, size, dir, lifetime, damage) {
 	this.entityId = 'bullet'
 	this.lifetime = lifetime;
 	this.direction = dir;
+	this.penetrates = false;
 	this.damage = damage;
 }
 

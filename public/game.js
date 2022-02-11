@@ -110,8 +110,11 @@ Game.prototype.updateEntities = function() {
 		if (!(updateBullet(entity))) {
 			tempArray.push(entity)
 		}
+        if (entityOps.detectEntityCollision(this.playerEntity, entity)) {
+            tempArray.push(entity)
+        }
 		for (let wall of Object.values(this.wallEntities)) {
-			if(entityOps.detectEntityCollision(entity, wall)) {
+			if (entityOps.detectEntityCollision(entity, wall)) {
 				tempArray.push(entity)
 			}
 		}
