@@ -1,7 +1,7 @@
 {
     "states" : {
         "spiralPtn" : {
-            "behaviour" : ["shootSpiral radial 1 18"]
+            "behaviour" : ["shoot radial 1"]
         }
     },
     "defaultState" : "spiralPtn",
