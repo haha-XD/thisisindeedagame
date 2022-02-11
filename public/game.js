@@ -1,4 +1,4 @@
-import { coneShotgun, parsePattern, updateBullet } from './common/bullets.js';
+import { parsePattern, updateBullet } from './common/bullets.js';
 import { SV_UPDATE_RATE } from './common/constants.js';
 import * as entityOps from './common/entityOperations.js';
 import { rotate, radians } from './common/helper.js';
@@ -20,25 +20,6 @@ let Game = function(canvas, UIcanvas, socket) {
     //networking    
     this.networkQueue = []
     this.socket = socket;
-    this.socket.on('connect', () => {console.log('connected!'); 
-                                     this.clientId = this.socket.id.valueOf();});
-    this.socket.on('update', (data) => {
-        this.networkQueue.push(data);
-    }); 
-    this.socket.on('bullet', (data) => {
-        parsePattern(data, this.localBulletEntities);
-    }); 
-    this.socket.on('ping', () => {
-        this.socket.emit('pong');
-    })
-    this.lastShotTS = 0
-    this.socket.on('allyShoot', (data) => {
-        if (data.playerId == this.playerEntity.id) return;
-        let projOwner = this.playerEntities[data.playerId];
-        data.x = projOwner.x;
-        data.y = projOwner.y;
-        parsePattern(data, this.localBulletEntities);
-    })
     //updates
 	this.updateRate = 100;
     this.updateInterval;
@@ -53,6 +34,18 @@ let Game = function(canvas, UIcanvas, socket) {
     this.lastAckNum = 0;
     this.cmdNum = 0
 	this.pendingInputStates = []; //an array of 'controllers' that are yet to be processed
+
+    this.socket.on('connect', () => {console.log('connected!'); 
+                                     this.clientId = this.socket.id.valueOf();});
+    this.socket.on('update', (data) => {
+        this.networkQueue.push(data);
+    }); 
+    this.socket.on('bullet', (data) => {
+        parsePattern(data, this.localBulletEntities);
+    }); 
+    this.socket.on('ping', () => {
+        this.socket.emit('pong');
+    })
 }
 
 Game.prototype.initialize = function(updateRate=0) {
@@ -67,7 +60,8 @@ Game.prototype.setUpdateRate = function(hz) {
 	}
 	this.updateInterval = setInterval(
 		(function(self) { return function() { self.update(); }; })(this),
-		1000 / hz);		
+		1000 / hz
+    );		
 }
 
 Game.prototype.update = function() {
@@ -116,10 +110,6 @@ Game.prototype.updateEntities = function() {
 		if (!(updateBullet(entity))) {
 			tempArray.push(entity)
 		}
-        if (entityOps.detectEntityCollision(entity, this.playerEntity)) {
-            this.socket.emit('dmg taken', entity)
-    
-        }
 		for (let wall of Object.values(this.wallEntities)) {
 			if(entityOps.detectEntityCollision(entity, wall)) {
 				tempArray.push(entity)
@@ -294,27 +284,6 @@ Game.prototype.processInputs = function() {
     }
 
     if (this.mouseHolding) {
-        let angleToMouse = Math.atan2(this.mousePos[1]-this.canvas.height/2, 
-                                      this.mousePos[0]-this.canvas.width/2) * 180/Math.PI;
-        let data = {
-            x: this.playerEntity.x,
-            y: this.playerEntity.y,
-            speed : 15,
-            size : 16,
-            lifetime : 5,
-            damage : 5,
-            shotCount : 1,
-            direction : angleToMouse - this.screenRot,
-            coneAngle : 0
-        }
-        
-        let elapsedTime = new Date().getTime() - this.lastShotTS;
-        console.log(elapsedTime)
-        if (elapsedTime > this.playerEntity.fireRate) {    
-            parsePattern(new coneShotgun(data), this.localBulletEntities);
-            this.lastShotTS = new Date().getTime();
-        }
-        this.socket.emit('shoot', data);
     }
 }
 

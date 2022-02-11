@@ -1,32 +1,6 @@
 import { Bullet } from "./entityTypes.js";
+import * as bulletPatterns from "./bulletPatterns.js";
 import { radians } from "./helper.js";
-
-export let BasePattern = function(x, y, spd, size, lifetime, damage) {
-    this.creationTS = new Date().getTime()
-    this.x = x;
-    this.y = y;
-    this.speed = spd;
-    this.size = size;
-    this.lifetime = lifetime; //seconds
-    this.damage = damage;
-}
-
-export let radialShotgun = function({x, y, speed, size, lifetime, damage, shotCount, direction}) {
-	BasePattern.call(this, x, y, speed, size, lifetime, damage);
-
-    this.shotCount = shotCount;
-    this.direction = direction
-    this.patternType = 'radial';
-}
-
-export let coneShotgun = function({x, y, speed, size, lifetime, damage, shotCount, direction, coneAngle}) {
-	BasePattern.call(this, x, y, speed, size, lifetime, damage);
-
-    this.shotCount = shotCount;
-    this.direction = direction
-    this.coneAngle = coneAngle
-    this.patternType = 'coneShotgun';
-}
 
 export function updateBullet(entity) {
     let elapsedTime = new Date().getTime() - entity.creationTS; 
@@ -48,6 +22,7 @@ export function parsePattern(pattern, entities) {
                                         pattern.direction + i * (360/pattern.shotCount),
                                         pattern.lifetime,
                                         pattern.damage)
+                bullet.creationTS = new Date().getTime()
                 entities.push(bullet);
             }
             break;
@@ -59,8 +34,20 @@ export function parsePattern(pattern, entities) {
                                         pattern.direction - pattern.coneAngle/2 + i * (pattern.coneAngle/pattern.shotCount),
                                         pattern.lifetime,
                                         pattern.damage)
+                bullet.creationTS = new Date().getTime()
                 entities.push(bullet);
             }
             break;
+    }
+}
+
+export function fireBullet(bullet, io) {
+    for (let s of io.of('/').sockets) {
+        let socket = s[1];
+        let pattern = new bulletPatterns[bullet.type](bullet)
+        setTimeout(() => {
+            parsePattern(pattern, socket.projectiles)
+        }, socket.latency)
+        socket.emit('bullet', pattern);    
     }
 }

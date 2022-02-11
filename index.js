@@ -10,8 +10,7 @@ import * as entityOps from './public/common/entityOperations.js';
 import * as lMap from './server_modules/levelMap.js';
 import * as enemies from './server_modules/enemies.js';
 import { SV_UPDATE_RATE } from './public/common/constants.js';
-import { coneShotgun } from './public/common/bullets.js';
-
+import { updateBullet } from './public/common/bullets.js';
 app.use(express.static('public'));
 
 let wallEntities = lMap.loadMap('nexus');
@@ -28,9 +27,9 @@ enemyEntities.push(new entityTypes.Enemy(550, 550, 5, 48, 'chaser'))
 
 io.on('connection', (socket) => {
 	socket.playerEntity = new entityTypes.Player(300, 300, 5, 32, socket.id);
-	socket.currentArea = null;
+	socket.projectiles = [];
 	socket.lastAckNum = 0;
-	socket.lastShotTS = 0;
+
 	playerEntities.push(socket.playerEntity);
 
 	console.log('[SERVER] a user has connected');	
@@ -48,25 +47,9 @@ io.on('connection', (socket) => {
 		console.log('sending bullet')
 	})
 
-	socket.on('dmg taken', (bullet) => {
-		if (socket.playerEntity.hp > 0) {
-			socket.playerEntity.hp -= bullet.damage;
-		}
-	})
-
 	socket.on('disconnect', () => {
 		playerEntities = playerEntities.filter(entity => entity != socket.playerEntity);
 	});
-
-	socket.on('shoot', (data) => {
-		let elapsedTime = new Date().getTime()-socket.lastShotTS
-		if (elapsedTime > socket.playerEntity.fireRate) {
-			let bullet = new coneShotgun(data)
-			bullet.playerId = socket.playerEntity.id;
-			io.emit('allyShoot', bullet);
-			socket.lastShotTS = new Date().getTime()	
-		}
-	})
 
 	setInterval(() => {	
 		socket.emit('update', {num: socket.lastAckNum,
@@ -86,6 +69,17 @@ io.on('connection', (socket) => {
 							   } 
 		});
 	}, 1000/SV_UPDATE_RATE)
+
+	socket.latency = 0;
+	let startTime = 0;
+	setInterval(() => {
+	  startTime = Date.now();
+	  socket.emit('ping');
+	}, 200);
+	socket.on('pong', function() {
+	  socket.latency = Date.now() - startTime;
+	  console.log(socket.latency);
+	});
 })
 
 let port = process.env.PORT;
@@ -97,6 +91,28 @@ function update() {
 	for (let entity of enemyEntities) {
 		enemies.updateEnemy(entity, enemyAI[entity.ai], playerEntities, io)
 	}
+    for (let s of io.of('/').sockets) {
+        let socket = s[1];
+		let tempArray = []
+		console.log(socket.projectiles.length)
+		for (let projectile of socket.projectiles) {
+			if (!(updateBullet(projectile))) {
+				tempArray.push(projectile)
+			}
+			if (entityOps.detectEntityCollision(projectile, socket.playerEntity)) {
+				if (socket.playerEntity.hp > 0) {
+					socket.playerEntity.hp -= projectile.damage;
+				}
+			}
+			for (let wall of Object.values(wallEntities)) {
+				if(entityOps.detectEntityCollision(projectile, wall)) {
+					tempArray.push(projectile)
+				}
+			}
+		}
+		socket.projectiles = socket.projectiles.filter(element => !tempArray.includes(element))
+	}
+
 
 	wallChunks = lMap.updateChunks(wallEntities);
 	playerChunks = lMap.updateChunks(playerEntities);

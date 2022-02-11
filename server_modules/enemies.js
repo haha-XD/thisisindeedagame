@@ -1,5 +1,6 @@
 import fs from 'fs';
-import * as bulletPatterns from '../public/common/bullets.js';
+import * as bulletPatterns from '../public/common/bulletPatterns.js';
+import { fireBullet } from '../public/common/bullets.js';
 
 import { advanceEntity } from '../public/common/entityOperations.js';
 
@@ -60,7 +61,7 @@ function parseCommand(playerEntities, entity, args, io, ai) {
                 let bullet = ai.projectiles[args[1]];
                 bullet.x = entity.x
                 bullet.y = entity.y
-                io.emit('bullet', new bulletPatterns[bullet.type](bullet))    
+                fireBullet(bullet, io)
             }
             break;
         case 'shootAimed':
@@ -71,7 +72,7 @@ function parseCommand(playerEntities, entity, args, io, ai) {
                 bullet.x = entity.x
                 bullet.y = entity.y
                 bullet.direction = angleToPlayer;
-                io.emit('bullet', new bulletPatterns[bullet.type](bullet))    
+                fireBullet(bullet, io)
             }
             break;
         case 'shootSpiral':
@@ -80,7 +81,7 @@ function parseCommand(playerEntities, entity, args, io, ai) {
                 bullet.x = entity.x
                 bullet.y = entity.y
                 bullet.direction = entity.spiralAngle;
-                io.emit('bullet', new bulletPatterns[bullet.type](bullet))    
+                fireBullet(bullet, io)
                 entity.spiralAngle += parseInt(args[3])
             }
             break;

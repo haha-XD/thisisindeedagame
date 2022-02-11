@@ -1,4 +1,16 @@
 1. collision & proper hitboxes [x]
 2. walls and map loading [x]
-3. bullets
-4. deterministic enemies
+3. enemies [x]
+4. bullets
+
+enemy shooting:
+1. enemy shoots 
+2. a packet is sent to the client
+3. avg latency is used to determine when the client gets the packet (call this t=x)
+4. spawn server sided projectile at t=x
+5. client sided projectile should also spawn at t=x cuz thats when they get the packet
+6. synced except in cases of lag spikes
+
+collision detection every tick:
+1. the server will rewind bullets backward by avg latency 
+2. test collision

@@ -1,15 +1,10 @@
 {
     "states" : {
-        "chasing" : {
-            "behaviour" : ["shootAimed coneShotgun 5",
-                           "shootAimed radial 10",
-                           "chase"]
-        },
-        "wandering" : {
-            "behaviour" : ["stateChangeInRange 400 chasing"]
+        "spiralPtn" : {
+            "behaviour" : ["shootSpiral radial 1 18"]
         }
     },
-    "defaultState" : "wandering",
+    "defaultState" : "spiralPtn",
     "projectiles" : {
         "radial" : {
             "type" : "radialShotgun",
