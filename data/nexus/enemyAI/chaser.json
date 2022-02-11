@@ -4,7 +4,7 @@
             "behaviour" : ["shoot radial 1", "stateChangeTime 3 wait"]
         },
         "wait" : {
-            "behaviour" : ["stateChangeTime 3 spiralPtn"]
+            "behaviour" : ["stateChangeTime 12 spiralPtn"]
         }
     },
     "defaultState" : "spiralPtn",
