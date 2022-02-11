@@ -1,7 +1,10 @@
 {
     "states" : {
         "spiralPtn" : {
-            "behaviour" : ["shoot radial 1"]
+            "behaviour" : ["shoot radial 1", "stateChangeTime 3 wait"]
+        },
+        "wait" : {
+            "behaviour" : ["stateChangeTime 3 spiralPtn"]
         }
     },
     "defaultState" : "spiralPtn",
@@ -12,7 +15,7 @@
             "size" : 16,
             "lifetime" : 5,
             "damage" : 5,
-            "shotCount" : 18,
+            "shotCount" : 1,
             "direction" : 0
         },
         "coneShotgun" : {

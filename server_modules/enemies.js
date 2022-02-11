@@ -51,6 +51,11 @@ function parseCommand(playerEntities, entity, args, io, ai) {
                 entity.state = args[2];
             }
             break;
+        case 'stateChangeTime':
+            if (entity.counter % args[1] == 0) {
+                entity.state = args[2]
+            }
+            break;
         case 'chase':
             let angleToPlayer = Math.atan2(closestPlayer.y-entity.y, 
                                            closestPlayer.x-entity.x) * 180/Math.PI;
