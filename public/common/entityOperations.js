@@ -4,6 +4,7 @@ import { CHUNK_SIZE } from './constants.js'
 export function applyInput(rot, inputs, entity, wallEntities) {
     let movementVec = [0,0]
     if (inputs[87] && inputs[87] <= 0.3) { //w 
+        console.log(inputs[87])
         movementVec = addVectors(advance(-rot+90, -inputs[87]), movementVec)
     }
     if (inputs[83] && inputs[83] <= 0.3) { //s
