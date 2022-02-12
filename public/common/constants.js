@@ -1,4 +1,4 @@
 export let TILE_SIZE = 38
 export let CHUNK_SIZE = 380
 export let SV_UPDATE_RATE = 10
-export let PROJECTILE_DELAY = 400
+export let PROJECTILE_DELAY = 300
