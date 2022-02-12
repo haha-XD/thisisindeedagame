@@ -54,7 +54,7 @@ export function fireBullet(bullet, io, currentTick, projectiles) {
     let pattern = new bulletPatterns[bullet.type](bullet);
     parsePattern(pattern, projectiles)
     io.emit('bullet', {
-        tick: currentTick + Math.floor(PROJECTILE_DELAY/(1000/SV_UPDATE_RATE)), 
+        tick: currentTick, 
         bullet: pattern
     });    
 }
