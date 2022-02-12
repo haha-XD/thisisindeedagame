@@ -20,6 +20,9 @@ let Game = function(canvas, UIcanvas, socket) {
     //networking    
     this.networkQueue = []
     this.socket = socket;
+    this.startTick = 0;
+    this.extraTicks = 0;
+    this.tick = 0;
     //updates
 	this.updateRate = 100;
     this.updateInterval;
@@ -35,17 +38,26 @@ let Game = function(canvas, UIcanvas, socket) {
     this.cmdNum = 0
 	this.pendingInputStates = []; //an array of 'controllers' that are yet to be processed
 
-    this.socket.on('connect', () => {console.log('connected!'); 
-                                     this.clientId = this.socket.id.valueOf();});
+    this.socket.on('connect', () => {
+        console.log('connected!'); 
+        this.clientId = this.socket.id.valueOf();
+        this.pingTime = new Date().getTime()
+        this.socket.emit("ping");
+    });
+    this.socket.on('tick', (tick) => {
+        this.startTick = tick;
+    })
+    this.socket.on('pong', () => {
+        this.startTime = new Date().getTime()
+        const latency = this.startTime - this.pingTime;
+        this.extraTicks = Math.floor(latency / (1000/SV_UPDATE_RATE))
+    })
     this.socket.on('update', (data) => {
         this.networkQueue.push(data);
     }); 
     this.socket.on('bullet', (data) => {
         parsePattern(data, this.localBulletEntities);
     }); 
-    this.socket.on('ping', () => {
-        this.socket.emit('pong');
-    })
 }
 
 Game.prototype.initialize = function(updateRate=0) {
@@ -65,9 +77,12 @@ Game.prototype.setUpdateRate = function(hz) {
 }
 
 Game.prototype.update = function() {
-    if(!this.socket.connected) {
-        return;
-    }
+    if (!this.socket.connected) return;
+    if (!this.startTick) return;
+    if (!this.extraTicks) return;
+    
+    this.tick = this.startTick + Math.floor((new Date().getTime() - this.startTime)/(1000/SV_UPDATE_RATE)) + this.extraTicks;
+
     this.processServerMessages();
 	this.processInputs(); 
     this.interpolateEnemies();
@@ -75,7 +90,7 @@ Game.prototype.update = function() {
     this.draw();
 
     let player = this.playerEntity;
-    document.getElementById('positionStatus').textContent = `x: ${player.x | 0}, y: ${player.y | 0} lastAckNum: ${this.lastAckNum} screenRot: ${this.screenRot | 0} chunkLoc: ${entityOps.entityChunkLoc(player)} hp: ${player.hp}`;
+    document.getElementById('positionStatus').textContent = `x: ${player.x | 0}, y: ${player.y | 0} tick: ${this.tick}`;
 }
 
 Game.prototype.interpolateEnemies = function() {

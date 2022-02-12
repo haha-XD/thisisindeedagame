@@ -25,6 +25,9 @@ let enemyAI = enemies.loadEnemyAI('nexus');
 
 enemyEntities.push(new entityTypes.Enemy(550, 550, 5, 48, 'chaser'))
 
+let tick = 0;
+let startTime = new Date().getTime();
+
 io.on('connection', (socket) => {
 	socket.playerEntity = new entityTypes.Player(300, 300, 5, 32, socket.id);
 	socket.projectiles = [];
@@ -34,6 +37,11 @@ io.on('connection', (socket) => {
 
 	console.log('[SERVER] a user has connected');	
 	console.log(socket.playerEntity);
+	socket.emit('tick', tick)
+
+	socket.on('ping', function() {
+		socket.emit('pong');
+	});
 	
 	socket.on('inputs', (data) => {
 		let cmdNum = data['num'];
@@ -69,17 +77,6 @@ io.on('connection', (socket) => {
 							   } 
 		});
 	}, 1000/SV_UPDATE_RATE)
-
-	socket.latency = 0;
-	let startTime = 0;
-	setInterval(() => {
-	  startTime = Date.now();
-	  socket.emit('ping');
-	}, 500);
-	socket.on('pong', function() {
-	  socket.latency = Date.now() - startTime;
-	  console.log(socket.latency);
-	});
 })
 
 let port = process.env.PORT;
@@ -88,13 +85,15 @@ if (port == null || port == "") {
 }
 
 function update() {
+	tick = Math.floor((new Date().getTime()-startTime)/(1000/SV_UPDATE_RATE))
+	console.log(tick)
+	
 	for (let entity of enemyEntities) {
 		enemies.updateEnemy(entity, enemyAI[entity.ai], playerEntities, io)
 	}
     for (let s of io.of('/').sockets) {
         let socket = s[1];
 		let tempArray = []
-		console.log(socket.projectiles.length)
 		for (let projectile of socket.projectiles) {
 			if (!(updateBullet(projectile))) {
 				tempArray.push(projectile)
