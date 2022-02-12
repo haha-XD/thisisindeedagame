@@ -16,6 +16,7 @@ app.use(express.static('public'));
 let wallEntities = lMap.loadMap('nexus');
 let playerEntities = [];
 let enemyEntities = [];
+let projectileEntities = [];
 
 let wallChunks = lMap.updateChunks(wallEntities);
 let playerChunks = lMap.updateChunks(playerEntities);
@@ -30,7 +31,6 @@ let startTime = new Date().getTime();
 
 io.on('connection', (socket) => {
 	socket.playerEntity = new entityTypes.Player(300, 300, 5, 32, socket.id);
-	socket.projectiles = [];
 	socket.lastAckNum = 0;
 
 	playerEntities.push(socket.playerEntity);
@@ -60,21 +60,22 @@ io.on('connection', (socket) => {
 	});
 
 	setInterval(() => {	
-		socket.emit('update', {num: socket.lastAckNum,
-     	    				   state: {
-							       players: lMap.getVisibleChunks(
-								       entityOps.entityChunkLoc(socket.playerEntity),
-								       playerChunks
-								   ), 
-								   walls: lMap.getVisibleChunks(
-									   entityOps.entityChunkLoc(socket.playerEntity),
-									   wallChunks
-								   ), 
-								   enemies: lMap.getVisibleChunks(
-									   entityOps.entityChunkLoc(socket.playerEntity),
-									   enemyChunks
-								   )
-							   } 
+		socket.emit('update', {
+			num: socket.lastAckNum,
+			state: {
+				players: lMap.getVisibleChunks(
+					entityOps.entityChunkLoc(socket.playerEntity),
+					playerChunks
+				), 
+				walls: lMap.getVisibleChunks(
+					entityOps.entityChunkLoc(socket.playerEntity),
+					wallChunks
+				), 
+				enemies: lMap.getVisibleChunks(
+					entityOps.entityChunkLoc(socket.playerEntity),
+					enemyChunks
+				)
+			} 
 		});
 	}, 1000/SV_UPDATE_RATE)
 })
@@ -89,29 +90,27 @@ function update() {
 	console.log(tick)
 	
 	for (let entity of enemyEntities) {
-		enemies.updateEnemy(entity, enemyAI[entity.ai], playerEntities, io)
+		enemies.updateEnemy(entity, enemyAI[entity.ai], playerEntities, io, tick, projectileEntities)
 	}
-    for (let s of io.of('/').sockets) {
-        let socket = s[1];
-		let tempArray = []
-		for (let projectile of socket.projectiles) {
-			if (!(updateBullet(projectile))) {
-				tempArray.push(projectile)
-			}
-			if (entityOps.detectEntityCollision(projectile, socket.playerEntity)) {
-				if (socket.playerEntity.hp > 0) {
-					socket.playerEntity.hp -= projectile.damage;
-				}
-			}
-			for (let wall of Object.values(wallEntities)) {
-				if(entityOps.detectEntityCollision(projectile, wall)) {
-					tempArray.push(projectile)
+	let tempArray = []
+	for (let projectile of projectileEntities) {
+		if (!(updateBullet(projectile))) {
+			tempArray.push(projectile)
+		}
+		for (let player of playerEntities) {
+			if (entityOps.detectEntityCollision(projectile, player)) {
+				if (player.hp > 0) {
+					player.hp -= projectile.damage;
 				}
 			}
 		}
-		socket.projectiles = socket.projectiles.filter(element => !tempArray.includes(element))
+		for (let wall of Object.values(wallEntities)) {
+			if(entityOps.detectEntityCollision(projectile, wall)) {
+				tempArray.push(projectile)
+			}
+		}
 	}
-
+	projectileEntities = projectileEntities.filter(element => !tempArray.includes(element))
 
 	wallChunks = lMap.updateChunks(wallEntities);
 	playerChunks = lMap.updateChunks(playerEntities);

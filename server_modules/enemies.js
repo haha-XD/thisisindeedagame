@@ -14,13 +14,13 @@ export function loadEnemyAI(mapName) {
     return aiData
 }
 
-export function updateEnemy(entity, ai, playerEntities, io) {
+export function updateEnemy(entity, ai, playerEntities, io, currentTick, projectiles) {
     entity.counter += 1;
 
     if(!entity.state) entity.state = ai.defaultState
     for (let behaviour of ai.states[entity.state].behaviour) {
         const args = behaviour.split(' ');
-        parseCommand(playerEntities, entity, args, io, ai)
+        parseCommand(playerEntities, entity, args, io, ai, currentTick, projectiles)
     }
 }
 
@@ -37,7 +37,7 @@ function getClosestPlayer(entity, playerEntities) {
     return [min, closestPlayer];
 }
 
-function parseCommand(playerEntities, entity, args, io, ai) {
+function parseCommand(playerEntities, entity, args, io, ai, currentTick, projectiles) {
     if (playerEntities.length==0) return;
     let [min, closestPlayer] = getClosestPlayer(entity, playerEntities)
     switch (args[0]) {
@@ -66,7 +66,7 @@ function parseCommand(playerEntities, entity, args, io, ai) {
                 let bullet = ai.projectiles[args[1]];
                 bullet.x = entity.x
                 bullet.y = entity.y
-                fireBullet(bullet, io)
+                fireBullet(bullet, io, currentTick, projectiles)
             }
             break;
         case 'shootAimed':
@@ -77,7 +77,7 @@ function parseCommand(playerEntities, entity, args, io, ai) {
                 bullet.x = entity.x
                 bullet.y = entity.y
                 bullet.direction = angleToPlayer;
-                fireBullet(bullet, io)
+                fireBullet(bullet, io, currentTick, projectiles)
             }
             break;
         case 'shootSpiral':
@@ -86,7 +86,7 @@ function parseCommand(playerEntities, entity, args, io, ai) {
                 bullet.x = entity.x
                 bullet.y = entity.y
                 bullet.direction = entity.spiralAngle;
-                fireBullet(bullet, io)
+                fireBullet(bullet, io, currentTick, projectiles)
                 entity.spiralAngle += parseInt(args[3])
             }
             break;

@@ -56,7 +56,10 @@ let Game = function(canvas, UIcanvas, socket) {
         this.networkQueue.push(data);
     }); 
     this.socket.on('bullet', (data) => {
-        parsePattern(data, this.localBulletEntities);
+        const tickDiff = Math.abs(data.tick - this.tick)
+        const latency = tickDiff * (1000/SV_UPDATE_RATE)
+        console.log(latency)
+        setTimeout(() => parsePattern(data.bullet, this.localBulletEntities), latency)
     }); 
 }
 

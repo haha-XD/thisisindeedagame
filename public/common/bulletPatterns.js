@@ -1,4 +1,5 @@
 export let BasePattern = function(x, y, spd, size, lifetime, damage) {
+    this.creationTS = new Date().getTime()
     this.x = x;
     this.y = y;
     this.speed = spd;
