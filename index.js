@@ -14,6 +14,7 @@ import { updateBullet } from './public/common/bullets.js';
 app.use(express.static('public'));
 
 let wallEntities = lMap.loadMap('nexus');
+
 let playerEntities = [];
 let enemyEntities = [];
 let projectileEntities = [];
@@ -87,7 +88,6 @@ if (port == null || port == "") {
 
 function update() {
 	tick = Math.floor((new Date().getTime()-startTime)/(1000/SV_UPDATE_RATE))
-	console.log(tick)
 	
 	for (let entity of enemyEntities) {
 		enemies.updateEnemy(entity, enemyAI[entity.ai], playerEntities, io, tick, projectileEntities)

@@ -17,7 +17,7 @@ export function updateBullet(entity) {
     return true;
 }
 
-export function parsePattern(pattern, entities) {
+export function parsePattern(pattern, entities, latency) {
     switch (pattern.patternType) {
         case 'radial':
             for(let i = 0; i < pattern.shotCount; i++) {
@@ -29,7 +29,7 @@ export function parsePattern(pattern, entities) {
                     pattern.lifetime,
                     pattern.damage
                 )
-                bullet.creationTS = pattern.creationTS
+                bullet.creationTS = new Date().getTime();
                 entities.push(bullet);
             }
             break;
@@ -43,7 +43,8 @@ export function parsePattern(pattern, entities) {
                     pattern.lifetime,
                     pattern.damage
                 )
-                bullet.creationTS = pattern.creationTS
+                
+                bullet.creationTS = new Date().getTime();
                 entities.push(bullet);
             }
             break;
@@ -51,10 +52,14 @@ export function parsePattern(pattern, entities) {
 }
 
 export function fireBullet(bullet, io, currentTick, projectiles) {
-    let pattern = new bulletPatterns[bullet.type](bullet);
+    const pattern = new bulletPatterns[bullet.type](bullet);
+    const projectileTick = currentTick + PROJECTILE_DELAY/(1000/SV_UPDATE_RATE)
     parsePattern(pattern, projectiles)
-    io.emit('bullet', {
-        tick: currentTick, 
-        bullet: pattern
-    });    
+    setTimeout(() => {
+        io.emit('bullet', {
+            tick: projectileTick,
+            bullet: pattern
+        }); 
+        console.log(projectileTick, currentTick)
+    }, PROJECTILE_DELAY)
 }

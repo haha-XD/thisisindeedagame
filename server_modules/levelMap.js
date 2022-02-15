@@ -14,9 +14,10 @@ export function loadMap(mapName) {
     for (const [y, line] of data.split(/\r?\n/).entries()) {
         for (const [x, char] of line.split('').entries()) {
             if (Object.keys(entityDict).includes(char)) {
-                tempArray.push(new entityDict[char](TILE_SIZE/2 + (TILE_SIZE * x), 
-                                                    TILE_SIZE/2 + (TILE_SIZE * y), 
-                                                    TILE_SIZE))
+                tempArray.push(new entityDict[char](
+                    TILE_SIZE/2 + (TILE_SIZE * x), 
+                    TILE_SIZE/2 + (TILE_SIZE * y), 
+                    TILE_SIZE))
             }
         }
     }
@@ -30,8 +31,6 @@ export function updateChunks(entities) {
 	for(let entity of entities) {
 		let chunkX = Math.trunc(entity.x / CHUNK_SIZE)
 		let chunkY = Math.trunc(entity.y / CHUNK_SIZE)
-        if (entity.entityId == 'bullet') {
-        }
 		tChunks[[chunkX, chunkY]].push(entity);
 	}	
 	return tChunks
